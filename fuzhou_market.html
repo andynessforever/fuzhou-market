@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>福州楼市成交汇总表（2025.12—2026.04.26）</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f0f2f5;
+  color: #222;
+  font-size: 13px;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #0f2a4a 0%, #1a5fa8 100%);
+  color: #fff;
+  padding: 28px 32px 22px;
+}
+.page-header h1 { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+.page-header .sub { margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.7); }
+.page-header .tags { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.tag {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+}
+
+.container { padding: 24px 20px 40px; max-width: 1400px; margin: 0 auto; }
+
+/* 说明块 */
+.note-box {
+  background: #fffbe6;
+  border-left: 4px solid #f5a623;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 12.5px;
+  color: #7a5800;
+  line-height: 1.7;
+}
+
+/* 统计卡片行 */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+.stat-card .num { font-size: 26px; font-weight: 800; color: #1a5fa8; }
+.stat-card .lbl { font-size: 12px; color: #999; margin-top: 4px; }
+
+/* 主汇总大表 */
+.big-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.table-title {
+  background: #0f2a4a;
+  color: #fff;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.scroll-x { overflow-x: auto; }
+
+table.main-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+table.main-table thead tr:first-child th {
+  background: #1a5fa8;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 10px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+table.main-table thead tr:nth-child(2) th {
+  background: #2c74c8;
+  color: #e8f0fd;
+  font-size: 11px;
+  padding: 7px 8px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.12);
+}
+table.main-table tbody td {
+  padding: 9px 10px;
+  text-align: center;
+  border-bottom: 1px solid #f0f2f5;
+  border-right: 1px solid #f0f2f5;
+  vertical-align: middle;
+}
+table.main-table tbody tr:hover td { background: #f0f6ff; }
+table.main-table tbody tr:nth-child(even) td { background: #f8fafd; }
+table.main-table tbody tr:nth-child(even):hover td { background: #e8f0fc; }
+
+.week-label {
+  font-weight: 700;
+  color: #0f2a4a;
+  text-align: left !important;
+  min-width: 100px;
+}
+.date-range {
+  color: #888;
+  font-size: 11px;
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* 可点击项目名称 */
+.proj-name {
+  font-weight: 600;
+  color: #1a5fa8;
+  text-align: left !important;
+  cursor: pointer;
+  transition: color 0.15s;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.proj-name:hover {
+  color: #d4500a;
+}
+.proj-name.champion {
+  background: linear-gradient(135deg, #fff8e1, #fff3cd) !important;
+  font-weight: 700 !important;
+  color: #d4500a !important;
+}
+.proj-name.champion::before { content: "🏆 "; }
+
+.num-up { color: #d32f2f; font-weight: 700; }
+.num-down { color: #2e7d32; font-weight: 700; }
+.num-na { color: #bbb; }
+.area-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: 3px;
+  vertical-align: middle;
+}
+.tag-wuqu { background: #e3f0fc; color: #1a5fa8; }
+.tag-minhou { background: #e8f5e9; color: #2e7d32; }
+
+/* 节假期特殊行 */
+.holiday-row td {
+  background: #f9f0ff !important;
+  color: #7b1fa2;
+}
+.holiday-row:hover td { background: #f3e5f5 !important; }
+
+/* 趋势图区域 */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  padding: 20px;
+}
+.chart-card h3 { font-size: 14px; font-weight: 700; color: #0f2a4a; margin-bottom: 16px; padding-left: 10px; border-left: 3px solid #1a5fa8; }
+
+/* 项目出现频次榜 */
+.freq-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.freq-section h3 { font-size: 15px; font-weight: 700; color: #0f2a4a; margin-bottom: 16px; padding-left: 10px; border-left: 4px solid #1a5fa8; }
+.freq-list { display: flex; flex-direction: column; gap: 10px; }
+.freq-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.freq-rank {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; flex-shrink: 0;
+}
+.rank-1 { background: #ffd700; color: #5c3d00; }
+.rank-2 { background: #c0c0c0; color: #333; }
+.rank-3 { background: #cd7f32; color: #fff; }
+.rank-other { background: #e8eefc; color: #1a5fa8; }
+
+/* 可点击项目名称（频次榜） */
+.freq-name {
+  font-weight: 700;
+  min-width: 140px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #0f2a4a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.freq-name:hover {
+  background: #e8f0fc;
+  color: #1a5fa8;
+}
+.freq-name .click-hint {
+  font-size: 10px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+.freq-bar-wrap { flex: 1; background: #f0f2f5; border-radius: 6px; height: 20px; overflow: hidden; }
+.freq-bar { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 700; color: #fff; transition: width 0.5s; }
+.bar-wuqu { background: linear-gradient(90deg, #1a5fa8, #4a90d9); }
+.bar-minhou { background: linear-gradient(90deg, #2e7d32, #66bb6a); }
+.bar-both { background: linear-gradient(90deg, #7b1fa2, #ba68c8); }
+.freq-count { font-size: 13px; font-weight: 800; color: #0f2a4a; min-width: 40px; text-align: right; }
+.freq-area { font-size: 11px; color: #999; min-width: 60px; }
+
+/* 图例 */
+.legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+canvas { max-width: 100%; }
+
+footer { text-align: center; color: #bbb; font-size: 11px; padding: 16px 0 24px; }
+
+/* ====== 弹窗 Modal ====== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 50, 0.55);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  width: 92%;
+  max-width: 660px;
+  max-height: 88vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.22s ease;
+}
+@keyframes modalIn {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal-header {
+  background: linear-gradient(135deg, #0f2a4a, #1a5fa8);
+  color: #fff;
+  padding: 18px 22px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.modal-header .proj-title { font-size: 18px; font-weight: 800; }
+.modal-header .proj-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.modal-close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: background 0.15s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.3); }
+.modal-body {
+  overflow-y: auto;
+  padding: 20px 22px 24px;
+  flex: 1;
+}
+
+/* 模态框内的汇总卡片 */
+.proj-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.proj-stat-card {
+  background: #f5f8ff;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.proj-stat-card .s-num { font-size: 20px; font-weight: 800; color: #1a5fa8; }
+.proj-stat-card .s-lbl { font-size: 11px; color: #888; margin-top: 3px; }
+
+/* 模态框内表格 */
+.modal-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+table.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+table.modal-table thead th {
+  background: #1a5fa8;
+  color: #fff;
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 12px;
+}
+table.modal-table tbody td {
+  padding: 9px 12px;
+  text-align: center;
+  border-bottom: 1px solid #f0f2f5;
+}
+table.modal-table tbody tr:hover td { background: #f0f6ff; }
+table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
+.modal-wk { font-weight: 700; color: #0f2a4a; }
+.modal-champion { color: #d4500a; font-weight: 700; }
+.modal-na { color: #ccc; }
+
+/* 模态框内小图表 */
+.modal-chart-wrap {
+  border-top: 1px solid #f0f2f5;
+  padding-top: 16px;
+}
+.modal-chart-title { font-size: 13px; font-weight: 700; color: #0f2a4a; margin-bottom: 12px; }
+
+/* 五区成交冠军列 */
+.champ-cell {
+  cursor: pointer;
+  padding: 6px 8px !important;
+  vertical-align: middle;
+  min-width: 160px;
+}
+.champ-cell:hover .champ-inner {
+  background: #fff8e1;
+  border-color: #f5a623;
+}
+.champ-inner {
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: #fffdf0;
+  transition: all 0.15s;
+}
+.champ-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b35c00;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.champ-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #d32f2f;
+  letter-spacing: 0.3px;
+}
+.champ-unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+}
+.champ-area {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+.champ-note {
+  display: inline-block;
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 10px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📊 福州楼市普通住宅成交汇总表</h1>
+  <div class="sub">数据来源：克而瑞福建区域 · 五区 + 闽侯 · 共 16 期周报</div>
+  <div class="tags">
+    <span class="tag">统计区间：2025.12.29 — 2026.04.26</span>
+    <span class="tag">数据类型：普通住宅网签成交</span>
+    <span class="tag">16期连续追踪</span>
+    <span class="tag" style="background:rgba(255,200,100,0.25);border-color:rgba(255,200,100,0.5);">💡 点击项目名称查看详情</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="note-box">
+    ℹ️ <strong>说明：</strong>W1-W3各期TOP10项目成交均价已通过OCR识别克而瑞公众号图表提取，以图表数据为准；W4-W15项目信息来自原文文字描述。本表完整收录了全部16期的区域总量数据。<strong>点击表格或频次榜中的项目名称</strong>可查看该项目在各期的成交均价（TOP10图来源）及区域均价对比。
+  </div>
+
+  <!-- 统计概览 -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num">16</div>
+      <div class="lbl">期数</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:#d32f2f;">253</div>
+      <div class="lbl">五区单周最高成交（套）</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:#d32f2f;">3</div>
+      <div class="lbl">五区单周最低成交（套）</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">29,894</div>
+      <div class="lbl">五区最高成交均价（元/㎡）</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">23,032</div>
+      <div class="lbl">五区最低成交均价（元/㎡）</div>
+    </div>
+  </div>
+
+  <!-- 主汇总大表 -->
+  <div class="big-table-wrap">
+    <div class="table-title">📋 16期 · 五区 + 闽侯普通住宅成交全量汇总表</div>
+    <div class="scroll-x">
+            <table class="main-table">
+        <thead>
+          <tr style="background:#1a5fa8;color:#fff;font-size:12px;">
+            <th style="text-align:left;padding-left:12px;min-width:100px;">周期</th>
+            <th colspan="3" style="border-right:1px solid rgba(255,255,255,0.15);">五区普通住宅</th>
+            <th colspan="3" style="border-right:1px solid rgba(255,255,255,0.15);">闽侯普通住宅</th>
+            <th style="min-width:160px;">五区成交冠军</th>
+          </tr>
+          <tr style="background:#2c74c8;color:#e8f0fd;font-size:11px;">
+            <th style="text-align:left;padding-left:12px;"></th>
+            <th>成交套数</th>
+            <th>成交面积</th>
+            <th style="border-right:1px solid rgba(255,255,255,0.12);">成交均价</th>
+            <th>成交套数</th>
+            <th>成交面积</th>
+            <th style="border-right:1px solid rgba(255,255,255,0.12);">成交均价</th>
+            <th>（面积第1·点击详情）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="week-label">W1<span class="date-range">12.29-1.4</span></td>
+            <td><strong>253</strong></td>
+            <td>3.33万㎡</td>
+            <td><strong>27,345</strong></td>
+            <td><strong>17</strong></td>
+            <td>0.18万㎡</td>
+            <td><strong>9,722</strong></td>
+            <td class="champ-cell" onclick="showProject('绿城芝兰月华')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 绿城芝兰月华</div>
+                <div class="champ-price">40,055 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">4344㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W2<span class="date-range">1.5-1.11</span></td>
+            <td><strong>98</strong></td>
+            <td>1.17万㎡</td>
+            <td><strong>23,890</strong></td>
+            <td><strong>20</strong></td>
+            <td>0.19万㎡</td>
+            <td><strong>8,450</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,575 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1808㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W3<span class="date-range">1.12-1.18</span></td>
+            <td><strong>88</strong></td>
+            <td>1.12万㎡</td>
+            <td><strong>28,287</strong></td>
+            <td><strong>18</strong></td>
+            <td>0.19万㎡</td>
+            <td><strong>9,459</strong></td>
+            <td class="champ-cell" onclick="showProject('万科城市之光')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 万科城市之光</div>
+                <div class="champ-price">23,150 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1164㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W4<span class="date-range">1.19-1.25</span></td>
+            <td><strong>111</strong></td>
+            <td>1.32万㎡</td>
+            <td><strong>24,324</strong></td>
+            <td><strong>20</strong></td>
+            <td>0.21万㎡</td>
+            <td><strong>10,079</strong></td>
+            <td class="champ-cell" onclick="showProject('地铁栖江元璟')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 地铁栖江元璟</div>
+                <div class="champ-price">25,595 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">2716㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W5<span class="date-range">1.26-2.1</span></td>
+            <td><strong>118</strong></td>
+            <td>1.4万㎡</td>
+            <td><strong>25,438</strong></td>
+            <td><strong>11</strong></td>
+            <td>0.12万㎡</td>
+            <td><strong>10,139</strong></td>
+            <td class="champ-cell" onclick="showProject('万科城市之光')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 万科城市之光</div>
+                <div class="champ-price">23,553 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">790㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W6<span class="date-range">2.1-2.8</span></td>
+            <td><strong>84</strong></td>
+            <td>0.94万㎡</td>
+            <td><strong>23,032</strong></td>
+            <td><strong>15</strong></td>
+            <td>0.16万㎡</td>
+            <td><strong>8,903</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,632 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1120㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W7🧧春节<span class="date-range">2.9-2.22</span></td>
+            <td><strong>3</strong></td>
+            <td>0.05万㎡</td>
+            <td><strong>29,894</strong></td>
+            <td><strong>2</strong></td>
+            <td>0.02万㎡</td>
+            <td><strong>10,541</strong></td>
+            <td class="champ-cell" onclick="showProject('绿城芝兰月华')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 绿城芝兰月华</div>
+                <div class="champ-price">38,071 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">975㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W8<span class="date-range">2.23-3.1</span></td>
+            <td><strong>136</strong></td>
+            <td>1.78万㎡</td>
+            <td><strong>27,234</strong></td>
+            <td><strong>27</strong></td>
+            <td>0.28万㎡</td>
+            <td><strong>10,918</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,414 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1177㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W9<span class="date-range">3.2-3.8</span></td>
+            <td><strong>90</strong></td>
+            <td>1.06万㎡</td>
+            <td><strong>25,526</strong></td>
+            <td><strong>22</strong></td>
+            <td>0.23万㎡</td>
+            <td><strong>10,461</strong></td>
+            <td class="champ-cell" onclick="showProject('左海望悦')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 左海望悦</div>
+                <div class="champ-price">22,217 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">877㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W10<span class="date-range">3.9-3.15</span></td>
+            <td><strong>155</strong></td>
+            <td>1.78万㎡</td>
+            <td><strong>23,322</strong></td>
+            <td><strong>48</strong></td>
+            <td>0.5万㎡</td>
+            <td><strong>10,231</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,262 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1530㎡ · 面积冠军<span class="champ-note">待核实</span></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W11<span class="date-range">3.16-3.22</span></td>
+            <td><strong>154</strong></td>
+            <td>1.82万㎡</td>
+            <td><strong>24,325</strong></td>
+            <td><strong>33</strong></td>
+            <td>0.35万㎡</td>
+            <td><strong>11,168</strong></td>
+            <td class="champ-cell" onclick="showProject('华润中寰悦府')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 华润中寰悦府</div>
+                <div class="champ-price">38,756 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1521㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W12<span class="date-range">3.23-3.29</span></td>
+            <td><strong>173</strong></td>
+            <td>2.15万㎡</td>
+            <td><strong>26,493</strong></td>
+            <td><strong>36</strong></td>
+            <td>0.38万㎡</td>
+            <td><strong>11,376</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,526 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1850㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W13<span class="date-range">3.30-4.5</span></td>
+            <td><strong>216</strong></td>
+            <td>2.51万㎡</td>
+            <td><strong>23,214</strong></td>
+            <td><strong>22</strong></td>
+            <td>0.23万㎡</td>
+            <td><strong>10,775</strong></td>
+            <td class="champ-cell" onclick="showProject('保利屏西天悦')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 保利屏西天悦</div>
+                <div class="champ-price">38,401 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1829㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W14<span class="date-range">4.6-4.12</span></td>
+            <td><strong>153</strong></td>
+            <td>1.8万㎡</td>
+            <td><strong>24,132</strong></td>
+            <td><strong>30</strong></td>
+            <td>0.3万㎡</td>
+            <td><strong>8,971</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">23,331 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1539㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W15<span class="date-range">4.13-4.19</span></td>
+            <td><strong>147</strong></td>
+            <td>1.71万㎡</td>
+            <td><strong>22,607</strong></td>
+            <td><strong>40</strong></td>
+            <td>0.4万㎡</td>
+            <td><strong>9,189</strong></td>
+            <td class="champ-cell" onclick="showProject('建发国贸望樾')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 建发国贸望樾</div>
+                <div class="champ-price">22,965 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1253㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="week-label">W16<span class="date-range">4.20-4.26</span></td>
+            <td><strong>185</strong></td>
+            <td>2.17万㎡</td>
+            <td><strong>25,713</strong></td>
+            <td><strong>32</strong></td>
+            <td>0.34万㎡</td>
+            <td><strong>8,642</strong></td>
+            <td class="champ-cell" onclick="showProject('地铁栖江元璟')">
+              <div class="champ-inner">
+                <div class="champ-name">🏆 地铁栖江元璟</div>
+                <div class="champ-price">25,284 <span class="champ-unit">元/㎡</span></div>
+                <div class="champ-area">1968㎡ · 面积冠军</div>
+              </div>
+            </td>
+          </tr>
+          <tr style="background:#f0f6ff;font-weight:700;border-top:2px solid #1a5fa8;">
+            <td class="week-label" style="color:#0f2a4a;font-weight:800;">📊 合计<span class="date-range">16期累计</span></td>
+            <td style="color:#d32f2f;font-size:14px;"><strong>2,164</strong></td>
+            <td style="color:#1a5fa8;">26.11万㎡</td>
+            <td style="color:#666;font-size:13px;">加权均价 25,071</td>
+            <td style="color:#4caf50;font-size:14px;"><strong>393</strong></td>
+            <td style="color:#2e7d32;">4.20万㎡</td>
+            <td style="color:#666;font-size:13px;">加权均价 10,089</td>
+                        <td style="padding:6px 8px;vertical-align:middle;">
+              <div style="font-size:11px;color:#666;line-height:1.8;">
+                <div style="font-weight:700;color:#b35c00;margin-bottom:3px;">🏆 16期冠军频次</div>
+                <div>建发国贸望樾 <strong style="color:#d32f2f;">7期</strong></div>
+                <div>地铁栖江元璟 <strong style="color:#d32f2f;">2期</strong></div>
+                <div>绿城芝兰月华 <strong style="color:#d32f2f;">2期</strong></div>
+                <div>万科城市之光 <strong style="color:#d32f2f;">2期</strong></div>
+                <div>保利屏西天悦 <strong style="color:#d32f2f;">2期</strong></div>
+                <div style="color:#aaa;">左海望悦/华润中寰悦府 各1期</div>
+              </div>
+            </td>2期</strong></div>
+                <div style="color:#aaa;">地铁栖江元璟/左海望悦/华润中寰悦府 各1期</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 图表区 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>五区普通住宅周度成交套数趋势</h3>
+      <canvas id="chart-wuqu-vol" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>五区 vs 闽侯 成交均价对比</h3>
+      <canvas id="chart-price" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>闽侯普通住宅周度成交套数趋势</h3>
+      <canvas id="chart-minhou-vol" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>五区 vs 闽侯 成交面积对比（万㎡）</h3>
+      <canvas id="chart-area" height="200"></canvas>
+    </div>
+  </div>
+
+    <!-- 项目频次榜 -->
+  <div class="freq-section">
+    <h3>🏅 TOP10入榜项目出现频次（16期内）</h3>
+    <p style="font-size:12px;color:#999;margin-bottom:14px;">统计各项目在16期克而瑞TOP10图表中的入榜次数（W1-W15均来自TOP10图数据）· <strong style="color:#1a5fa8;">点击项目名称查看各期成交均价详情</strong></p>
+    <div class="freq-list">
+      <div class="freq-item">
+        <div class="freq-rank rank-1">1</div>
+        <div class="freq-name" onclick="showProject('建发国贸望樾')">建发国贸望樾 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:100%">11期</div></div>
+        <div class="freq-count">11期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-3">2</div>
+        <div class="freq-name" onclick="showProject('左海望悦')">左海望悦 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:73%">8期</div></div>
+        <div class="freq-count">8期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-3">4</div>
+        <div class="freq-name" onclick="showProject('华润中寰悦府')">华润中寰悦府 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:55%">6期</div></div>
+        <div class="freq-count">6期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-3">4</div>
+        <div class="freq-name" onclick="showProject('建总流花溪')">建总流花溪 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:64%">7期</div></div>
+        <div class="freq-count">7期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-2">2</div>
+        <div class="freq-name" onclick="showProject('榕发城启未来')">榕发城启未来 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:64%">7期</div></div>
+        <div class="freq-count">7期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">6</div>
+        <div class="freq-name" onclick="showProject('福建四建锦绣时代')">福建四建锦绣时代 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-minhou">闽侯</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-minhou" style="width:45%">5期</div></div>
+        <div class="freq-count">5期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">6</div>
+        <div class="freq-name" onclick="showProject('保利屏西天悦')">保利屏西天悦 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:55%">6期</div></div>
+        <div class="freq-count">6期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('万科城市之光')">万科城市之光 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">6</div>
+        <div class="freq-name" onclick="showProject('地铁栖江元璟')">地铁栖江元璟 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:55%">6期</div></div>
+        <div class="freq-count">6期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('左海星悦颂')">左海星悦颂 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('建总云璟未来')">建总云璟未来 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:45%">5期</div></div>
+        <div class="freq-count">5期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('恒大滨江左岸')">恒大滨江左岸 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('绿城芝兰月华')">绿城芝兰月华 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">6</div>
+        <div class="freq-name" onclick="showProject('国贸江屿原')">国贸江屿原 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-minhou">闽侯</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-minhou" style="width:45%">5期</div></div>
+        <div class="freq-count">5期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('榕发北源云筑')">榕发北源云筑 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">10</div>
+        <div class="freq-name" onclick="showProject('龙旺华府壹号')">龙旺华府壹号 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-minhou">闽侯</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-minhou" style="width:36%">4期</div></div>
+        <div class="freq-count">4期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('建发瀚云')">建发瀚云 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('建发紫宸')">建发紫宸 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('建总乌山梧桐序')">建总乌山梧桐序 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('建总瑞玺')">建总瑞玺 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('榕发湖樾')">榕发湖樾 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('保利天瓒')">保利天瓒 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('福州熙悦府')">福州熙悦府 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">16</div>
+        <div class="freq-name" onclick="showProject('龙旺华府壹号')">龙旺华府壹号 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-minhou">闽侯</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-minhou" style="width:27%">3期</div></div>
+        <div class="freq-count">3期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">24</div>
+        <div class="freq-name" onclick="showProject('福厝远山拾里')">福厝远山拾里 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:18%">2期</div></div>
+        <div class="freq-count">2期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">24</div>
+        <div class="freq-name" onclick="showProject('新投映万合')">新投映万合 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:18%">2期</div></div>
+        <div class="freq-count">2期</div>
+      </div>
+      <div class="freq-item">
+        <div class="freq-rank rank-other">24</div>
+        <div class="freq-name" onclick="showProject('榕耀之城')">榕耀之城 <span class="click-hint">👆</span></div>
+        <div class="freq-area"><span class="area-tag tag-wuqu">五区</span></div>
+        <div class="freq-bar-wrap"><div class="freq-bar bar-wuqu" style="width:18%">2期</div></div>
+        <div class="freq-count">2期</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div class="modal-overlay" id="projectModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="proj-title" id="modal-proj-name">—</div>
+        <div class="proj-sub" id="modal-proj-sub">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="proj-stat-row" id="modal-stat-row"></div>
+      <div class="modal-table-wrap">
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th>周期</th>
+              <th>日期区间</th>
+              <th>TOP10角色</th>
+              <th>项目成交均价（元/㎡）</th>
+              <th>所在区域周均价（元/㎡）</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody id="modal-table-body"></tbody>
+        </table>
+      </div>
+      <div class="modal-chart-wrap">
+        <div class="modal-chart-title">📈 项目出现周期 vs 所在区域均价走势</div>
+        <canvas id="modal-chart" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+
+// ===== 全局数据 =====
+const weeks = ['W1\n12.29-1.4','W2\n1.5-1.11','W3\n1.12-1.18','W4\n1.19-1.25','W5\n1.26-2.1','W6\n2.1-2.8','W7🧧春节\n2.9-2.22','W8\n2.23-3.1','W9\n3.2-3.8','W10\n3.9-3.15','W11\n3.16-3.22','W12\n3.23-3.29','W13\n3.30-4.5','W14\n4.6-4.12','W15\n4.13-4.19','W16\n4.20-4.26'];
+const wuquVol = [253,98,88,111,118,84,3,136,90,155,154,173,216,153,147,185];
+const minhouVol = [17,20,18,20,11,15,2,27,22,48,33,36,22,30,40,32];
+const wuquPrice = [27345,23890,28287,24324,25438,23032,29894,27234,25526,23322,24325,26493,23214,24132,22607,25713];
+const minhouPrice = [9722,8450,9459,10079,10139,8903,10541,10918,10461,10231,11168,11376,10775,8971,9189,8642];
+const wuquArea = [3.33,1.17,1.12,1.32,1.40,0.94,0.05,1.78,1.06,1.78,1.82,2.15,2.51,1.80,1.71,2.17];
+const minhouArea = [0.33,0.19,0.19,0.21,0.12,0.15,0.03,0.31,0.22,0.47,0.33,0.38,0.23,0.30,0.40,0.34];
+
+const weekLabels = ['W1','W2','W3','W4','W5','W6','W7🧧','W8','W9','W10','W11','W12','W13','W14','W15','W16'];
+const dateRanges = ['12.29–01.04','01.05–01.11','01.12–01.18','01.19–01.25','01.26–02.01','02.01–02.08','02.09–02.22','02.23–03.01','03.02–03.08','03.09–03.15','03.16–03.22','03.23–03.29','03.30–04.05','04.06–04.12','04.13–04.19','04.20–04.26'];
+
+// ===== 项目详情数据库 =====
+// projPrice: 来自克而瑞TOP10图，W1-W13均已通过图片识别或原文文字提取
+const projectDB = {
+
+  '万科城市之光': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 2, role: '五区TOP10第1名（面积冠军）', projPrice: 23150, remark: 'W3面积第1，1164㎡，均价23150元/㎡' },
+      { week: 4, role: '五区TOP10第1名（面积冠军）', projPrice: 23553, remark: 'W5面积第1，790㎡，均价23553元/㎡' },
+      { week: 6, role: '五区TOP10第4名', projPrice: 23652, remark: 'W7面积第4，768㎡，均价23652元/㎡' },
+      { week: 12, role: '五区TOP10第4名', projPrice: 24978, remark: 'W13面积第4，1142㎡，均价24978元/㎡' },
+    ]
+  },
+
+  '中铁城江督府二期': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 2, role: '闽侯TOP10上榜', projPrice: 6759, remark: 'W3闽侯上榜，390㎡，均价6759元/㎡' },
+    ]
+  },
+
+  '保利天瓒': {
+    zone: '五区', district: '鼓楼区',
+    records: [
+      { week: 0, role: '五区TOP10第10名', projPrice: 37358, remark: 'W1面积第10，904㎡，均价37358元/㎡' },
+      { week: 2, role: '五区TOP10第3名', projPrice: 36804, remark: 'W3面积第3，715㎡，均价36804元/㎡' },
+      { week: 14, role: '五区TOP10第6名', projPrice: 38223, remark: 'W15面积第6，804㎡，均价38223元/㎡' },
+    ]
+  },
+
+  '保利屏西天悦': {
+    zone: '五区', district: '鼓楼区',
+    records: [
+      { week: 3, role: '五区TOP10第4名', projPrice: 39399, remark: 'W4面积第4，1078㎡，均价39399元/㎡' },
+      { week: 7, role: '五区TOP10第2名', projPrice: 40776, remark: 'W8面积第2，800㎡，均价40776元/㎡' },
+      { week: 9, role: '五区TOP10第9名', projPrice: 39441, remark: 'W10面积第9，850㎡，均价39441元/㎡' },
+      { week: 12, role: '五区TOP10第1名（面积冠军）', projPrice: 38401, remark: 'W13面积第1，1829㎡，均价38401元/㎡' },
+      { week: 13, role: '五区TOP10第8名', projPrice: 38552, remark: 'W14面积第8，788㎡，均价38552元/㎡' },
+      { week: 15, role: '五区TOP10第4名', projPrice: 40298, remark: 'W16面积第4，1165㎡，均价40298元/㎡' },
+    ]
+  },
+
+  '华润中寰悦府': {
+    zone: '五区', district: '台江区',
+    records: [
+      { week: 1, role: '五区TOP10第10名', projPrice: 37749, remark: 'W2面积第10，409㎡，均价37749元/㎡' },
+      { week: 6, role: '五区TOP10第7名', projPrice: 37865, remark: 'W7面积第7，669㎡，均价37865元/㎡' },
+      { week: 9, role: '五区TOP10第10名', projPrice: 37735, remark: 'W10面积第10，846㎡，均价37735元/㎡' },
+      { week: 10, role: '五区TOP10第1名（面积冠军）', projPrice: 38756, remark: 'W11面积第1，1521㎡，均价38756元/㎡' },
+      { week: 11, role: '五区TOP10第2名', projPrice: 37889, remark: 'W12面积第2，1211㎡，均价37889元/㎡（TOP10图）' },
+      { week: 12, role: '五区TOP10第10名', projPrice: 38754, remark: 'W13面积第10，819㎡，均价38754元/㎡' },
+    ]
+  },
+
+  '名城映江': {
+    zone: '五区', district: '马尾区',
+    records: [
+      { week: 10, role: '五区TOP10第3名', projPrice: 10863, remark: 'W11面积第3，1318㎡，均价10863元/㎡' },
+    ]
+  },
+
+  '国贸建发保利悦湖': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 8, role: '闽侯TOP10第6名', projPrice: 13508, remark: 'W9面积第6，618㎡，均价13508元/㎡' },
+    ]
+  },
+
+  '国贸江屿原': {
+    zone: '闽侯', district: '闽侯区',
+    records: [
+      { week: 9, role: '闽侯TOP10第1名（面积冠军）', projPrice: 10849, remark: 'W10面积第1，1915㎡，均价10849元/㎡' },
+      { week: 10, role: '闽侯TOP10第1名（面积冠军）', projPrice: 10780, remark: 'W11面积第1，1677㎡，均价10780元/㎡' },
+      { week: 11, role: '闽侯TOP10第3名', projPrice: 10795, remark: 'W12均价10795元/㎡（TOP10图，用户提供正确数据，已修正OCR错误）' },
+      { week: 13, role: '闽侯TOP10第1名（面积冠军）', projPrice: 10594, remark: 'W14面积第1，1391㎡，均价10594元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第2名', projPrice: 10425, remark: 'W15面积第2，1017㎡，均价10425元/㎡' },
+    ]
+  },
+
+  '地铁栖江元璟': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 3, role: '五区TOP10第1名（面积冠军）', projPrice: 25595, remark: 'W4面积第1，2716㎡，均价25595元/㎡' },
+      { week: 4, role: '五区TOP10第2名', projPrice: 25384, remark: 'W5面积第2，715㎡，均价25384元/㎡' },
+      { week: 9, role: '五区TOP10第2名', projPrice: 25473, remark: 'W10面积第2，1435㎡，均价25473元/㎡' },
+      { week: 12, role: '五区TOP10第3名', projPrice: 20324, remark: 'W13面积第3，1286㎡，均价20324元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第3名', projPrice: 24992, remark: 'W15面积第3，925㎡，均价24992元/㎡' },
+      { week: 15, role: '五区TOP10第1名（面积冠军）', projPrice: 25284, remark: 'W16面积第1，1968㎡，均价25284元/㎡' },
+    ]
+  },
+
+  '坤鸿天玺': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 6, role: '闽侯TOP10第5名', projPrice: 14309, remark: 'W7面积第5，723㎡，均价14309元/㎡' },
+    ]
+  },
+
+  '左海星悦颂': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 1, role: '五区TOP10第4名', projPrice: 25354, remark: 'W2面积第4，546㎡，均价25354元/㎡' },
+      { week: 2, role: '五区TOP10第9名', projPrice: 22919, remark: 'W3面积第9，381㎡，均价22919元/㎡' },
+      { week: 4, role: '五区TOP10第3名', projPrice: 23710, remark: 'W5面积第3，495㎡，均价23710元/㎡' },
+      { week: 7, role: '五区TOP10第2名', projPrice: 23657, remark: 'W8面积第2，607㎡，均价23657元/㎡' },
+    ]
+  },
+
+  '左海望悦': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 2, role: '五区TOP10第7名', projPrice: 22449, remark: 'W3面积第7，390㎡，均价22449元/㎡' },
+      { week: 7, role: '五区TOP10第9名', projPrice: 21723, remark: 'W8面积第9，499㎡，均价21723元/㎡' },
+      { week: 8, role: '五区TOP10第1名（面积冠军）', projPrice: 22217, remark: 'W9面积第1，877㎡，均价22217元/㎡' },
+      { week: 9, role: '五区TOP10第3名', projPrice: 21926, remark: 'W10面积第3，1213㎡，均价21926元/㎡' },
+      { week: 6, role: '五区TOP10第6名', projPrice: 21479, remark: 'W7面积第6，721㎡，均价21479元/㎡' },
+      { week: 11, role: '五区TOP10第8名', projPrice: 22063, remark: 'W12面积第8，891㎡，均价22063元/㎡（TOP10图）' },
+      { week: 12, role: '五区TOP10第9名', projPrice: 22227, remark: 'W13面积第9，876㎡，均价22227元/㎡' },
+      { week: 15, role: '五区TOP10第10名', projPrice: 22040, remark: 'W16面积第10，801㎡，均价22040元/㎡' },
+    ]
+  },
+
+  '左海璞宸': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 0, role: '五区TOP10第5名', projPrice: 29523, remark: 'W1面积第5，均价29523元/㎡' },
+    ]
+  },
+
+  '建发国贸望樾': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 1, role: '五区TOP10第1名（面积冠军）', projPrice: 23575, remark: 'W2面积第1，1808㎡，均价23575元/㎡' },
+      { week: 2, role: '五区TOP10第4名', projPrice: 23712, remark: 'W3面积第4，482㎡，均价23712元/㎡' },
+      { week: 4, role: '五区TOP10第3名', projPrice: 23386, remark: 'W5面积第3，1233㎡，均价23386元/㎡' },
+      { week: 5, role: '五区TOP10第1名（面积冠军）', projPrice: 23632, remark: 'W6面积第1，1120㎡，均价23632元/㎡' },
+      { week: 7, role: '五区TOP10第1名（面积冠军）', projPrice: 23414, remark: 'W8面积第1，1177㎡，均价23414元/㎡' },
+      { week: 8, role: '五区TOP10第2名', projPrice: 23025, remark: 'W9面积第2，859㎡，均价23025元/㎡' },
+      { week: 9, role: '五区TOP10第2名', projPrice: 23262, remark: 'W10面积第2，1530㎡，均价23262元/㎡' },
+      { week: 11, role: '五区TOP10第1名（面积冠军）', projPrice: 23526, remark: 'W12面积第1，1850㎡，均价23526元/㎡（TOP10图）' },
+      { week: 12, role: '五区TOP10第7名', projPrice: 23176, remark: 'W13面积第7，1047㎡，均价23176元/㎡' },
+      { week: 13, role: '五区TOP10第1名（面积冠军）', projPrice: 23331, remark: 'W14面积第1，1539㎡，均价23331元/㎡' },
+      { week: 14, role: '五区TOP10第1名（面积冠军）', projPrice: 22965, remark: 'W15面积第1，1253㎡，均价22965元/㎡' },
+      { week: 15, role: '五区TOP10第3名', projPrice: 22623, remark: 'W16面积第3，1281㎡，均价22623元/㎡' },
+    ]
+  },
+
+  '建发瀚云': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 3, role: '五区TOP10第10名', projPrice: 43667, remark: 'W4面积第10，589㎡，均价43667元/㎡' },
+      { week: 7, role: '五区TOP10第6名', projPrice: 40459, remark: 'W8面积第6，527㎡，均价40459元/㎡' },
+      { week: 8, role: '五区TOP10第10名', projPrice: 42915, remark: 'W9面积第10，366㎡，均价42915元/㎡' },
+    ]
+  },
+
+  '建发灏云': {
+    zone: '五区', district: '台江区',
+    records: [
+      { week: 0, role: '五区TOP10第2名', projPrice: 39980, remark: 'W1面积第2，3289㎡，均价39980元/㎡' },
+      { week: 11, role: '五区TOP10第5名', projPrice: 41315, remark: 'W12均价41315元/㎡（TOP10图，用户提供正确排名）' },
+      { week: 15, role: '五区TOP10第2名', projPrice: 42279, remark: 'W16面积第2，1302㎡，均价42279元/㎡' },
+    ]
+  },
+
+  '建发瑞云': {
+    zone: '五区', district: '台江区',
+    records: [
+      { week: 10, role: '五区TOP10第4名', projPrice: 41896, remark: 'W11面积第4，1148㎡，均价41896元/㎡' },
+    ]
+  },
+
+  '建发紫宸': {
+    zone: '五区', district: '鼓楼区',
+    records: [
+      { week: 2, role: '五区TOP10第2名', projPrice: 68867, remark: 'W3面积第2，726㎡，均价68867元/㎡' },
+      { week: 7, role: '五区TOP10第3名', projPrice: 57379, remark: 'W8面积第3，750㎡，均价57379元/㎡' },
+      { week: 8, role: '五区TOP10第3名', projPrice: 54767, remark: 'W9面积第3，745㎡，均价54767元/㎡' },
+    ]
+  },
+
+  '建总乌山梧桐序': {
+    zone: '五区', district: '台江区',
+    records: [
+      { week: 0, role: '五区TOP10第8名', projPrice: 39281, remark: 'W1面积第8，1199㎡，均价39281元/㎡' },
+      { week: 3, role: '五区TOP10第8名', projPrice: 38076, remark: 'W4面积第8，670㎡，均价38076元/㎡' },
+      { week: 7, role: '五区TOP10第5名', projPrice: 38128, remark: 'W8面积第5，527㎡，均价38128元/㎡' },
+    ]
+  },
+
+  '建总云璟未来': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 10, role: '五区TOP10第5名', projPrice: 19711, remark: 'W11面积第5，1056㎡，均价19711元/㎡' },
+      { week: 9, role: '五区TOP10第8名', projPrice: 19939, remark: 'W10面积第8，911㎡，均价19939元/㎡' },
+      { week: 6, role: '五区TOP10第2名', projPrice: 22203, remark: 'W7面积第2，972㎡，均价22203元/㎡' },
+      { week: 12, role: '五区TOP10第6名', projPrice: 20150, remark: 'W13面积第6，1047㎡，均价20150元/㎡' },
+      { week: 15, role: '五区TOP10第6名', projPrice: 19883, remark: 'W16面积第6，1048㎡，均价19883元/㎡' },
+    ]
+  },
+
+  '建总江南尚琛': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 2, role: '五区TOP10第5名', projPrice: 28516, remark: 'W3面积第5，均价28516元/㎡' },
+    ]
+  },
+
+  '建总流花溪': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 0, role: '五区TOP10第9名', projPrice: 23155, remark: 'W1面积第9，1056㎡，均价23155元/㎡' },
+      { week: 7, role: '五区TOP10第5名', projPrice: 23033, remark: 'W8面积第5（同名），604㎡，均价23033元/㎡' },
+      { week: 8, role: '五区TOP10第4名', projPrice: 21874, remark: 'W9面积第4，740㎡，均价21874元/㎡' },
+      { week: 11, role: '五区TOP10第4名', projPrice: 23849, remark: 'W12均价23849元/㎡（TOP10图，用户提供正确排名）' },
+      { week: 12, role: '五区TOP10第5名', projPrice: 21907, remark: 'W13面积第5，1063㎡，均价21907元/㎡' },
+      { week: 13, role: '五区TOP10第5名', projPrice: 23555, remark: 'W14面积第5，1017㎡，均价23555元/㎡' },
+      { week: 15, role: '五区TOP10第9名', projPrice: 23126, remark: 'W16面积第9，837㎡，均价23126元/㎡' },
+    ]
+  },
+
+  '建总瑞玺': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 0, role: '五区TOP10第3名', projPrice: 30367, remark: 'W1面积第3，2566㎡，均价30367元/㎡' },
+      { week: 3, role: '五区TOP10第2名', projPrice: 30432, remark: 'W4面积第2，1403㎡，均价30432元/㎡' },
+      { week: 11, role: '五区TOP10第6名', projPrice: 29906, remark: 'W12均价29906元/㎡（用户提供正确数据）（用户确认排名第6）（TOP10图）' },
+    ]
+  },
+
+  '建总瑞璟': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 10, role: '五区TOP10第9名', projPrice: 22639, remark: 'W11面积第9，869㎡，均价22639元/㎡' },
+      { week: 13, role: '五区TOP10第9名', projPrice: 22475, remark: 'W14面积第9，755㎡，均价22475元/㎡' },
+    ]
+  },
+
+  '恒大滨江左岸': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 1, role: '五区TOP10第3名', projPrice: null, remark: 'W2面积第3，551㎡（均价未识别）' },
+      { week: 2, role: '五区TOP10第10名', projPrice: 9996, remark: 'W3面积第10，366㎡，均价9996元/㎡' },
+      { week: 7, role: '五区TOP10第9名', projPrice: 9789, remark: 'W8面积第9，467㎡，均价9789元/㎡' },
+      { week: 6, role: '五区TOP10第8名', projPrice: 10249, remark: 'W7面积第8，645㎡，均价10249元/㎡' },
+    ]
+  },
+
+  '新投映万合': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 4, role: '五区TOP10第7名', projPrice: 15265, remark: 'W5面积第7，366㎡，均价15265元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第4名', projPrice: 16068, remark: 'W15面积第4，878㎡，均价16068元/㎡' },
+    ]
+  },
+
+  '榕发北源云筑': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 2, role: '五区TOP10第6名', projPrice: 23892, remark: 'W3面积第6，434㎡，均价23892元/㎡' },
+      { week: 8, role: '五区TOP10第5名', projPrice: 24063, remark: 'W9面积第5，652㎡，均价24063元/㎡' },
+      { week: 4, role: '五区TOP10第4名', projPrice: 23147, remark: 'W5面积第4，408㎡，均价23147元/㎡' },
+      { week: 13, role: '五区TOP10第3名', projPrice: 22784, remark: 'W14面积第3，1137㎡，均价22784元/㎡' },
+    ]
+  },
+
+  '榕发城启未来': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 10, role: '五区TOP10第7名', projPrice: 20446, remark: 'W11面积第7，941㎡，均价20446元/㎡' },
+      { week: 8, role: '五区TOP10第7名', projPrice: 20212, remark: 'W9面积第7，504㎡，均价20212元/㎡' },
+      { week: 7, role: '五区TOP10第10名', projPrice: 20838, remark: 'W8面积第10，465㎡，均价20838元/㎡' },
+      { week: 11, role: '五区TOP10第8名', projPrice: 20364, remark: 'W12均价20364元/㎡（TOP10图，用户提供正确数据）' },
+      { week: 12, role: '五区TOP10第2名', projPrice: 25783, remark: 'W13面积第2，1509㎡，均价25783元/㎡' },
+      { week: 13, role: '五区TOP10第7名', projPrice: 20727, remark: 'W14面积第7，913㎡，均价20727元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第5名', projPrice: 20277, remark: 'W15面积第5，823㎡，均价20277元/㎡' },
+      { week: 15, role: '五区TOP10第7名', projPrice: 21380, remark: 'W16面积第7，1040㎡，均价21380元/㎡' },
+    ]
+  },
+
+  '榕发湖樾': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 0, role: '五区TOP10第6名', projPrice: 24531, remark: 'W1面积第6，1479㎡，均价24531元/㎡' },
+      { week: 1, role: '五区TOP10第9名', projPrice: 24005, remark: 'W2面积第9，417㎡，均价24005元/㎡' },
+      { week: 11, role: '五区TOP10第7名', projPrice: 25527, remark: 'W12均价25527元/㎡（用户提供正确数据）（TOP10图）' },
+    ]
+  },
+
+  '榕发锦城大观': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 8, role: '五区TOP10第8名', projPrice: 27022, remark: 'W9面积第8，386㎡，均价27022元/㎡' },
+    ]
+  },
+
+  '榕发麓里': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 9, role: '五区TOP10第4名', projPrice: 24492, remark: 'W10面积第4，1143㎡，均价24492元/㎡' },
+    ]
+  },
+
+  '榕发麓里云筑': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 10, role: '五区TOP10第6名', projPrice: 24691, remark: 'W11面积第6，1026㎡，均价24691元/㎡' },
+      { week: 12, role: '五区TOP10第8名', projPrice: 26211, remark: 'W13面积第8，1034㎡，均价26211元/㎡' },
+      { week: 13, role: '五区TOP10第6名', projPrice: 24610, remark: 'W14面积第6，1016㎡，均价24610元/㎡' },
+    ]
+  },
+
+  '榕耀之城': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 9, role: '五区TOP10第5名', projPrice: 12286, remark: 'W10面积第5，1061㎡，均价12286元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第10名', projPrice: 11826, remark: 'W15面积第10，715㎡，均价11826元/㎡' },
+    ]
+  },
+
+  '港融悦江尊品二期': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 9, role: '闽侯TOP10第6名', projPrice: 11044, remark: 'W10面积第6，1000㎡，均价11044元/㎡' },
+    ]
+  },
+
+  '福州熙悦府': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 1, role: '五区TOP10第8名', projPrice: 9664, remark: 'W2面积第8，423㎡，均价9664元/㎡' },
+      { week: 4, role: '五区TOP10第10名', projPrice: 9108, remark: 'W5面积第10，356㎡，均价9108元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第7名', projPrice: 9607, remark: 'W15面积第7，791㎡，均价9607元/㎡' },
+    ]
+  },
+
+  '福建四建锦绣时代': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 0, role: '闽侯成交冠军', projPrice: null, remark: 'W1闽侯主力，刚需盘稳定成交' },
+      { week: 1, role: '闽侯成交冠军', projPrice: null, remark: 'W2闽侯主力，刚需持续撑市' },
+      { week: 3, role: '闽侯TOP10第6名', projPrice: 11157, remark: 'W4面积第6，804㎡，均价11157元/㎡' },
+      { week: 5, role: '闽侯TOP10第8名', projPrice: 11359, remark: 'W6面积第8，516㎡，均价11359元/㎡' },
+      { week: 8, role: '闽侯TOP10第9名', projPrice: 10917, remark: 'W9面积第9，366㎡，均价10917元/㎡' },
+    ]
+  },
+
+  '绿城芝兰月华': {
+    zone: '五区', district: '台江区',
+    records: [
+      { week: 0, role: '五区TOP10第1名（面积冠军）', projPrice: 40055, remark: 'W1面积第1，4344㎡，均价40055元/㎡' },
+      { week: 3, role: '五区TOP10第7名', projPrice: 38705, remark: 'W4面积第7，719㎡，均价38705元/㎡' },
+      { week: 5, role: '五区TOP10第6名', projPrice: 38481, remark: 'W6面积第6，579㎡，均价38481元/㎡' },
+      { week: 6, role: '五区TOP10第1名（面积冠军）', projPrice: 38071, remark: 'W7面积第1，975㎡，均价38071元/㎡' },
+    ]
+  },
+
+  '锦绣外滩': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 3, role: '闽侯TOP10第9名', projPrice: 14923, remark: 'W4面积第9，619㎡，均价14923元/㎡' },
+    ]
+  },
+
+  '锦绣时代': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 7, role: '闽侯成交冠军', projPrice: null, remark: 'W8节后复苏，大幅反弹' },
+    ]
+  },
+
+  '阳光城檀映': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 1, role: '五区TOP10第6名', projPrice: 13282, remark: 'W2面积第6，465㎡，均价13282元/㎡' },
+      { week: 3, role: '五区TOP10第5名', projPrice: 13976, remark: 'W4面积第5，845㎡，均价13976元/㎡' },
+    ]
+  },
+
+  '首开螺洲温泉小镇': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 7, role: '五区TOP10第4名', projPrice: 12940, remark: 'W8面积第4，528㎡，均价12940元/㎡' },
+    ]
+  },
+
+  '鲁能公馆三期': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 7, role: '五区TOP10第8名', projPrice: 21899, remark: 'W8面积第8，486㎡，均价21899元/㎡' },
+    ]
+  },
+
+  '鹏湃国公馆': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 9, role: '五区TOP10第7名', projPrice: 14605, remark: 'W10面积第7，993㎡，均价14605元/㎡' },
+      { week: 13, role: '五区TOP10第10名', projPrice: 14371, remark: 'W14面积第10，619㎡，均价14371元/㎡' },
+    ]
+  },
+
+  '福厝远山拾里': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 13, role: '五区TOP10第4名', projPrice: 19315, remark: 'W14面积第4，1042㎡，均价19315元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第9名', projPrice: 18977, remark: 'W15面积第9，752㎡，均价18977元/㎡' },
+    ]
+  },
+
+  '龙旺华府壹号': {
+    zone: '闽侯', district: '闽侯县',
+    records: [
+      { week: 4, role: '闽侯TOP10第9名', projPrice: 5144, remark: 'W5面积第9，358㎡，均价5144元/㎡' },
+      { week: 5, role: '闽侯TOP10第10名', projPrice: 5171, remark: 'W6面积第10，459㎡，均价5171元/㎡' },
+      { week: 14, role: '五区+闽侯TOP10第8名', projPrice: 5004, remark: 'W15面积第8，785㎡，均价5004元/㎡' },
+      { week: 15, role: '闽侯TOP10第1名（面积冠军）', projPrice: 5245, remark: 'W16面积第1，1054㎡，均价5245元/㎡' },
+    ]
+  },
+
+  '龙湖景粼天著': {
+    zone: '五区', district: '仓山区',
+    records: [
+      { week: 4, role: '五区TOP10第8名', projPrice: 12501, remark: 'W5面积第8，358㎡，均价12501元/㎡' },
+    ]
+  },
+
+  '福厝远山拾里': {
+    zone: '五区', district: '晋安区',
+    records: [
+      { week: 15, role: '五区TOP10第8名', projPrice: 19758, remark: 'W16面积第8，877㎡，均价19758元/㎡' },
+    ]
+  },
+
+};
+
+// ===== 大表格Charts =====
+const bgColors = weekLabels.map((w,i) => i===6 ? 'rgba(186,104,200,0.7)' : 'rgba(26,95,168,0.75)');
+const borderColors = weekLabels.map((w,i) => i===6 ? '#7b1fa2' : '#1a5fa8');
+
+const defaultOpts = {
+  responsive: true,
+  plugins: {
+    legend: { position: 'bottom', labels: { font: { size: 11 } } },
+    tooltip: { mode: 'index' }
+  },
+  scales: {
+    x: { ticks: { font: { size: 10 } } },
+    y: { ticks: { font: { size: 11 } } }
+  }
+};
+
+new Chart(document.getElementById('chart-wuqu-vol'), {
+  type: 'bar',
+  data: {
+    labels: weekLabels,
+    datasets: [{ label: '五区成交套数', data: wuquVol, backgroundColor: bgColors, borderColor: borderColors, borderWidth: 1, borderRadius: 4 }]
+  },
+  options: defaultOpts
+});
+
+new Chart(document.getElementById('chart-price'), {
+  type: 'line',
+  data: {
+    labels: weekLabels,
+    datasets: [
+      { label: '五区均价(元/㎡)', data: wuquPrice, borderColor: '#1a5fa8', backgroundColor: 'rgba(26,95,168,0.1)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: weekLabels.map((w,i)=>i===6?'#7b1fa2':'#1a5fa8'), tension: 0.3, fill: true },
+      { label: '闽侯均价(元/㎡)', data: minhouPrice, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,0.08)', borderWidth: 2, pointRadius: 4, tension: 0.3, fill: true }
+    ]
+  },
+  options: defaultOpts
+});
+
+new Chart(document.getElementById('chart-minhou-vol'), {
+  type: 'bar',
+  data: {
+    labels: weekLabels,
+    datasets: [{ label: '闽侯成交套数', data: minhouVol, backgroundColor: weekLabels.map((w,i)=>i===6?'rgba(186,104,200,0.7)':'rgba(46,125,50,0.7)'), borderColor: weekLabels.map((w,i)=>i===6?'#7b1fa2':'#2e7d32'), borderWidth: 1, borderRadius: 4 }]
+  },
+  options: defaultOpts
+});
+
+new Chart(document.getElementById('chart-area'), {
+  type: 'bar',
+  data: {
+    labels: weekLabels,
+    datasets: [
+      { label: '五区成交面积(万㎡)', data: wuquArea, backgroundColor: 'rgba(26,95,168,0.65)', borderColor: '#1a5fa8', borderWidth: 1, borderRadius: 3 },
+      { label: '闽侯成交面积(万㎡)', data: minhouArea, backgroundColor: 'rgba(46,125,50,0.65)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 3 }
+    ]
+  },
+  options: defaultOpts
+});
+
+// ===== 弹窗逻辑 =====
+let modalChartInstance = null;
+
+function showProject(name) {
+  const data = projectDB[name];
+  if (!data) {
+    alert('暂无该项目详细数据');
+    return;
+  }
+
+  document.getElementById('modal-proj-name').textContent = name;
+  const zoneTag = data.zone === '五区' ? '🏙️ 五区项目' : '🌿 闽侯项目';
+  document.getElementById('modal-proj-sub').textContent = `${zoneTag} · ${data.district} · 出现 ${data.records.length} 期`;
+
+  // 汇总卡片
+  const isWuqu = data.zone === '五区';
+  const priceArr = isWuqu ? wuquPrice : minhouPrice;
+  const activeWeeks = data.records.map(r => r.week);
+  const avgAreaPrice = Math.round(activeWeeks.reduce((s, w) => s + priceArr[w], 0) / activeWeeks.length);
+  const projPrices = data.records.filter(r => r.projPrice).map(r => r.projPrice);
+  const avgProjPrice = projPrices.length ? Math.round(projPrices.reduce((a,b)=>a+b,0)/projPrices.length) : null;
+
+  document.getElementById('modal-stat-row').innerHTML = `
+    <div class="proj-stat-card">
+      <div class="s-num">${data.records.length}</div>
+      <div class="s-lbl">上榜期数</div>
+    </div>
+    <div class="proj-stat-card">
+      <div class="s-num" style="color:#d32f2f;">${avgProjPrice ? avgProjPrice.toLocaleString() : '—'}</div>
+      <div class="s-lbl">项目均价均值（元/㎡）<br><span style="font-size:10px;color:#bbb;">（TOP10图数据）</span></div>
+    </div>
+    <div class="proj-stat-card">
+      <div class="s-num" style="color:#2e7d32;">${avgAreaPrice.toLocaleString()}</div>
+      <div class="s-lbl">区域均价均值（元/㎡）<br><span style="font-size:10px;color:#bbb;">（${data.zone}整体）</span></div>
+    </div>
+  `;
+
+  // 表格
+  const tbody = document.getElementById('modal-table-body');
+  tbody.innerHTML = '';
+  data.records.forEach(r => {
+    const wk = r.week;
+    const isChamp = r.role.includes('冠军') || r.role.includes('第1名');
+    const areaPrice = (isWuqu ? wuquPrice : minhouPrice)[wk];
+    const projPriceDisplay = r.projPrice
+      ? `<strong style="color:#d32f2f;">${r.projPrice.toLocaleString()}</strong> <span style="font-size:10px;color:#aaa;">（TOP10图）</span>`
+      : `<span style="color:#999;">—</span> <span style="font-size:10px;color:#bbb;">（文章描述）</span>`;
+    tbody.innerHTML += `
+      <tr>
+        <td class="modal-wk">${weekLabels[wk]}</td>
+        <td style="color:#666;">${dateRanges[wk]}</td>
+        <td class="${isChamp ? 'modal-champion' : ''}">${r.role}</td>
+        <td>${projPriceDisplay}</td>
+        <td>${areaPrice.toLocaleString()} 元/㎡</td>
+        <td style="color:#888;font-size:12px;text-align:left;">${r.remark}</td>
+      </tr>
+    `;
+  });
+
+  // 小图表
+  if (modalChartInstance) {
+    modalChartInstance.destroy();
+    modalChartInstance = null;
+  }
+
+  const chartLabels = data.records.map(r => weekLabels[r.week]);
+  const chartPrices = data.records.map(r => (isWuqu ? wuquPrice : minhouPrice)[r.week]);
+  const chartVols   = data.records.map(r => (isWuqu ? wuquVol : minhouVol)[r.week]);
+  const accentColor = isWuqu ? '#1a5fa8' : '#2e7d32';
+  const accentBg    = isWuqu ? 'rgba(26,95,168,0.12)' : 'rgba(46,125,50,0.12)';
+
+  modalChartInstance = new Chart(document.getElementById('modal-chart'), {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        {
+          type: 'bar',
+          label: `${data.zone}区域成交套数（套）`,
+          data: chartVols,
+          backgroundColor: accentBg.replace('0.12','0.55'),
+          borderColor: accentColor,
+          borderWidth: 1,
+          borderRadius: 4,
+          yAxisID: 'y1',
+          order: 2
+        },
+        {
+          type: 'line',
+          label: `${data.zone}区域均价（元/㎡）`,
+          data: chartPrices,
+          borderColor: '#f5a623',
+          backgroundColor: 'rgba(245,166,35,0.1)',
+          borderWidth: 2,
+          pointRadius: 5,
+          pointBackgroundColor: '#f5a623',
+          tension: 0.35,
+          fill: false,
+          yAxisID: 'y2',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              if (ctx.dataset.yAxisID === 'y2') return ` 均价：${ctx.parsed.y.toLocaleString()} 元/㎡`;
+              return ` 成交：${ctx.parsed.y} 套`;
+            }
+          }
+        }
+      },
+      scales: {
+        y1: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: '成交套数', font: { size: 10 } },
+          ticks: { font: { size: 10 } }
+        },
+        y2: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: '均价(元/㎡)', font: { size: 10 } },
+          ticks: { font: { size: 10 }, callback: v => v.toLocaleString() },
+          grid: { drawOnChartArea: false }
+        },
+        x: { ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  document.getElementById('projectModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('projectModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('projectModal')) closeModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
