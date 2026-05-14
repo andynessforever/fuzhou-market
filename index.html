@@ -1170,8 +1170,8 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
               <th>周期</th>
               <th>日期区间</th>
               <th>TOP10角色</th>
-              <th>项目成交均价（元/㎡）</th>
-              <th>所在区域周均价（元/㎡）</th>
+              <th>项目均价（元/㎡）</th>
+              <th>本周成交面积（㎡）</th>
               <th>备注</th>
             </tr>
           </thead>
@@ -1179,7 +1179,7 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
         </table>
       </div>
       <div class="modal-chart-wrap">
-        <div class="modal-chart-title">📈 项目出现周期 vs 所在区域均价走势</div>
+        <div class="modal-chart-title">📈 项目上榜周 — 成交面积（㎡）& 项目均价（元/㎡）走势</div>
         <canvas id="modal-chart" height="160"></canvas>
       </div>
     </div>
@@ -1729,11 +1729,17 @@ function showProject(name) {
 
   // 汇总卡片
   const isWuqu = data.zone === '五区';
-  const priceArr = isWuqu ? wuquPrice : minhouPrice;
-  const activeWeeks = data.records.map(r => r.week);
-  const avgAreaPrice = Math.round(activeWeeks.reduce((s, w) => s + priceArr[w], 0) / activeWeeks.length);
   const projPrices = data.records.filter(r => r.projPrice).map(r => r.projPrice);
   const avgProjPrice = projPrices.length ? Math.round(projPrices.reduce((a,b)=>a+b,0)/projPrices.length) : null;
+
+  // 从 remark 解析项目成交面积
+  function parseAreaStat(remark) {
+    if (!remark) return null;
+    const m = remark.match(/[，,]\s*(\d+)\s*㎡/);
+    return m ? parseInt(m[1]) : null;
+  }
+  const projAreas = data.records.map(r => parseAreaStat(r.remark)).filter(v => v != null);
+  const avgProjArea = projAreas.length ? Math.round(projAreas.reduce((a,b)=>a+b,0)/projAreas.length) : null;
 
   document.getElementById('modal-stat-row').innerHTML = `
     <div class="proj-stat-card">
@@ -1742,11 +1748,11 @@ function showProject(name) {
     </div>
     <div class="proj-stat-card">
       <div class="s-num" style="color:#d32f2f;">${avgProjPrice ? avgProjPrice.toLocaleString() : '—'}</div>
-      <div class="s-lbl">项目均价均值（元/㎡）<br><span style="font-size:10px;color:#bbb;">（TOP10图数据）</span></div>
+      <div class="s-lbl">项目均价均值（元/㎡）</div>
     </div>
     <div class="proj-stat-card">
-      <div class="s-num" style="color:#2e7d32;">${avgAreaPrice.toLocaleString()}</div>
-      <div class="s-lbl">区域均价均值（元/㎡）<br><span style="font-size:10px;color:#bbb;">（${data.zone}整体）</span></div>
+      <div class="s-num" style="color:#1a5fa8;">${avgProjArea ? avgProjArea.toLocaleString() : '—'}</div>
+      <div class="s-lbl">上榜均成交面积（㎡）</div>
     </div>
   `;
 
@@ -1756,17 +1762,21 @@ function showProject(name) {
   data.records.forEach(r => {
     const wk = r.week;
     const isChamp = r.role.includes('冠军') || r.role.includes('第1名');
-    const areaPrice = (isWuqu ? wuquPrice : minhouPrice)[wk];
     const projPriceDisplay = r.projPrice
-      ? `<strong style="color:#d32f2f;">${r.projPrice.toLocaleString()}</strong> <span style="font-size:10px;color:#aaa;">（TOP10图）</span>`
-      : `<span style="color:#999;">—</span> <span style="font-size:10px;color:#bbb;">（文章描述）</span>`;
+      ? `<strong style="color:#d32f2f;">${r.projPrice.toLocaleString()}</strong>`
+      : `<span style="color:#999;">—</span>`;
+    // 从 remark 中解析面积
+    const areaMatch = r.remark ? r.remark.match(/[，,]\s*(\d+)\s*㎡/) : null;
+    const areaDisplay = areaMatch
+      ? `<span style="color:#1a5fa8;font-weight:600;">${parseInt(areaMatch[1]).toLocaleString()} ㎡</span>`
+      : `<span style="color:#999;">—</span>`;
     tbody.innerHTML += `
       <tr>
         <td class="modal-wk">${weekLabels[wk]}</td>
         <td style="color:#666;">${dateRanges[wk]}</td>
         <td class="${isChamp ? 'modal-champion' : ''}">${r.role}</td>
         <td>${projPriceDisplay}</td>
-        <td>${areaPrice.toLocaleString()} 元/㎡</td>
+        <td>${areaDisplay}</td>
         <td style="color:#888;font-size:12px;text-align:left;">${r.remark}</td>
       </tr>
     `;
@@ -1778,11 +1788,18 @@ function showProject(name) {
     modalChartInstance = null;
   }
 
-  const chartLabels = data.records.map(r => weekLabels[r.week]);
-  const chartPrices = data.records.map(r => (isWuqu ? wuquPrice : minhouPrice)[r.week]);
-  const chartVols   = data.records.map(r => (isWuqu ? wuquVol : minhouVol)[r.week]);
-  const accentColor = isWuqu ? '#1a5fa8' : '#2e7d32';
-  const accentBg    = isWuqu ? 'rgba(26,95,168,0.12)' : 'rgba(46,125,50,0.12)';
+  // 从 remark 中解析项目成交面积，格式：'，XXXX㎡，'
+  function parseArea(remark) {
+    if (!remark) return null;
+    const m = remark.match(/[，,]\s*(\d+)\s*㎡/);
+    return m ? parseInt(m[1]) : null;
+  }
+
+  const chartLabels  = data.records.map(r => weekLabels[r.week]);
+  const chartPrices  = data.records.map(r => r.projPrice || null);
+  const chartAreas   = data.records.map(r => parseArea(r.remark));
+  const accentColor  = isWuqu ? '#1a5fa8' : '#2e7d32';
+  const accentBg     = isWuqu ? 'rgba(26,95,168,0.12)' : 'rgba(46,125,50,0.12)';
 
   modalChartInstance = new Chart(document.getElementById('modal-chart'), {
     type: 'bar',
@@ -1791,8 +1808,8 @@ function showProject(name) {
       datasets: [
         {
           type: 'bar',
-          label: `${data.zone}区域成交套数（套）`,
-          data: chartVols,
+          label: '项目成交面积（㎡）',
+          data: chartAreas,
           backgroundColor: accentBg.replace('0.12','0.55'),
           borderColor: accentColor,
           borderWidth: 1,
@@ -1802,17 +1819,18 @@ function showProject(name) {
         },
         {
           type: 'line',
-          label: `${data.zone}区域均价（元/㎡）`,
+          label: '项目均价（元/㎡）',
           data: chartPrices,
-          borderColor: '#f5a623',
-          backgroundColor: 'rgba(245,166,35,0.1)',
+          borderColor: '#d32f2f',
+          backgroundColor: 'rgba(211,47,47,0.1)',
           borderWidth: 2,
           pointRadius: 5,
-          pointBackgroundColor: '#f5a623',
+          pointBackgroundColor: '#d32f2f',
           tension: 0.35,
           fill: false,
           yAxisID: 'y2',
-          order: 1
+          order: 1,
+          spanGaps: true
         }
       ]
     },
@@ -1824,8 +1842,10 @@ function showProject(name) {
         tooltip: {
           callbacks: {
             label: function(ctx) {
-              if (ctx.dataset.yAxisID === 'y2') return ` 均价：${ctx.parsed.y.toLocaleString()} 元/㎡`;
-              return ` 成交：${ctx.parsed.y} 套`;
+              if (ctx.dataset.yAxisID === 'y2') {
+                return ctx.parsed.y != null ? ` 项目均价：${ctx.parsed.y.toLocaleString()} 元/㎡` : ' 均价：暂无';
+              }
+              return ctx.parsed.y != null ? ` 成交面积：${ctx.parsed.y.toLocaleString()} ㎡` : ' 面积：暂无';
             }
           }
         }
@@ -1834,13 +1854,13 @@ function showProject(name) {
         y1: {
           type: 'linear',
           position: 'left',
-          title: { display: true, text: '成交套数', font: { size: 10 } },
-          ticks: { font: { size: 10 } }
+          title: { display: true, text: '成交面积(㎡)', font: { size: 10 } },
+          ticks: { font: { size: 10 }, callback: v => v.toLocaleString() }
         },
         y2: {
           type: 'linear',
           position: 'right',
-          title: { display: true, text: '均价(元/㎡)', font: { size: 10 } },
+          title: { display: true, text: '项目均价(元/㎡)', font: { size: 10 } },
           ticks: { font: { size: 10 }, callback: v => v.toLocaleString() },
           grid: { drawOnChartArea: false }
         },
