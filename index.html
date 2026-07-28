@@ -427,11 +427,11 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
 
 <div class="page-header">
   <h1>📊 福州楼市普通住宅成交汇总表</h1>
-  <div class="sub">数据来源：克而瑞福建区域 · 五区 + 闽侯 · 共 29 期周报</div>
+  <div class="sub">数据来源：克而瑞福建区域 · 五区 + 闽侯 · 共 <span id="sub-count">29</span> 期周报</div>
   <div class="tags">
-    <span class="tag">统计区间：2025.12.29 — 2026.07.26</span>
+    <span class="tag" id="tag-interval">统计区间：2025.12.29 — 2026.07.26</span>
     <span class="tag">数据类型：普通住宅网签成交</span>
-    <span class="tag">29期连续追踪</span>
+    <span class="tag" id="tag-tracking">29期连续追踪</span>
     <span class="tag" style="background:rgba(255,200,100,0.25);border-color:rgba(255,200,100,0.5);">💡 点击项目名称查看详情</span>
   </div>
 </div>
@@ -439,35 +439,35 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
 <div class="container">
 
   <div class="note-box">
-    ℹ️ <strong>说明：</strong>W1-W3各期TOP10项目成交均价已通过OCR识别克而瑞公众号图表提取，以图表数据为准；W4-W29项目信息来自原文文字描述及TOP10图数据。本表完整收录了全部29期的区域总量数据。<strong>点击表格或频次榜中的项目名称</strong>可查看该项目在各期的成交均价（TOP10图来源）及区域均价对比。
+    ℹ️ <strong>说明：</strong>W1-W3各期TOP10项目成交均价已通过OCR识别克而瑞公众号图表提取，以图表数据为准；W4-W<span id="note-wend">29</span>项目信息来自原文文字描述及TOP10图数据。本表完整收录了全部<span id="note-total">29</span>期的区域总量数据。<strong>点击表格或频次榜中的项目名称</strong>可查看该项目在各期的成交均价（TOP10图来源）及区域均价对比。
   </div>
 
   <!-- 统计概览 -->
   <div class="stat-row">
     <div class="stat-card">
-      <div class="num">29</div>
+      <div class="num" id="stat-count">29</div>
     </div>
     <div class="stat-card">
-      <div class="num" style="color:#d32f2f;">338</div>
+      <div class="num" id="stat-maxvol" style="color:#d32f2f;">338</div>
       <div class="lbl">五区单周最高成交（套）</div>
     </div>
     <div class="stat-card">
-      <div class="num" style="color:#d32f2f;">3</div>
+      <div class="num" id="stat-minvol" style="color:#d32f2f;">3</div>
       <div class="lbl">五区单周最低成交（套）</div>
     </div>
     <div class="stat-card">
-      <div class="num">30,693</div>
+      <div class="num" id="stat-maxprice">30,693</div>
       <div class="lbl">五区最高成交均价（元/㎡）</div>
     </div>
     <div class="stat-card">
-      <div class="num">22,607</div>
+      <div class="num" id="stat-minprice">22,607</div>
       <div class="lbl">五区最低成交均价（元/㎡）</div>
     </div>
   </div>
 
   <!-- 主汇总大表 -->
   <div class="big-table-wrap">
-    <div class="table-title">📋 29期 · 五区 + 闽侯普通住宅成交全量汇总表</div>
+    <div class="table-title">📋 <span id="table-title-count">29</span>期 · 五区 + 闽侯普通住宅成交全量汇总表</div>
     <div class="scroll-x">
             <table class="main-table">
         <thead>
@@ -1377,8 +1377,31 @@ function renderFreq(){
   if(s) s.innerHTML = '仅展示五区项目 · 统计各项目在'+N+'期克而瑞TOP10图表中的入榜次数（W1-W'+N+'均来自TOP10图数据） · <strong style="color:#1a5fa8;">点击项目名称查看各期成交均价详情</strong>';
 }
 
+function renderHeader(){
+  const N = weeks.length;
+  const set = (id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('sub-count', N);
+  set('tag-tracking', N + '期连续追踪');
+  set('stat-count', N);
+  set('table-title-count', N);
+  set('note-wend', N);
+  set('note-total', N);
+  // 统计区间
+  const periodStart = '2025.12.29';
+  const dm = (dateRanges[N-1] || '').match(/(\d{4})\.(\d{1,2})\.(\d{1,2})-(\d{1,2})\.(\d{1,2})/);
+  let periodEnd = '2026.07.26';
+  if(dm){ const p=(x)=>('0'+x).slice(-2); periodEnd = dm[1]+'.'+p(dm[4])+'.'+p(dm[5]); }
+  set('tag-interval', '统计区间：' + periodStart + ' — ' + periodEnd);
+  // 极值（五区）
+  set('stat-maxvol', fmt(Math.max.apply(null, wuquVol)));
+  set('stat-minvol', fmt(Math.min.apply(null, wuquVol)));
+  set('stat-maxprice', fmt(Math.max.apply(null, wuquPrice)));
+  set('stat-minprice', fmt(Math.min.apply(null, wuquPrice)));
+}
+
 renderMainTable();
 renderFreq();
+renderHeader();
 
 // ===== 大表格Charts =====
 const bgColors = weekLabels.map((w,i) => i===6 ? 'rgba(186,104,200,0.7)' : 'rgba(26,95,168,0.75)');
