@@ -505,16 +505,6 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
     </div>
   </div>
 
-  <div class="charts-row">
-    <div class="chart-card">
-      <h3>闽侯普通住宅周度成交套数趋势</h3>
-      <canvas id="chart-minhou-vol" height="200"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>五区 vs 闽侯 成交面积对比（万㎡）</h3>
-      <canvas id="chart-area" height="200"></canvas>
-    </div>
-  </div>
 
     <!-- 项目频次榜 -->
     <div class="freq-section">
@@ -1458,27 +1448,6 @@ new Chart(document.getElementById('chart-price'), {
     datasets: [
       { label: '五区均价(元/㎡)', data: wuquPrice, borderColor: '#1a5fa8', backgroundColor: 'rgba(26,95,168,0.1)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: weekLabels.map((w,i)=>i===6?'#7b1fa2':'#1a5fa8'), tension: 0.3, fill: true },
       { label: '闽侯均价(元/㎡)', data: minhouPrice, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,0.08)', borderWidth: 2, pointRadius: 4, tension: 0.3, fill: true }
-    ]
-  },
-  options: defaultOpts
-});
-
-new Chart(document.getElementById('chart-minhou-vol'), {
-  type: 'bar',
-  data: {
-    labels: weekLabels,
-    datasets: [{ label: '闽侯成交套数', data: minhouVol, backgroundColor: weekLabels.map((w,i)=>i===6?'rgba(186,104,200,0.7)':'rgba(46,125,50,0.7)'), borderColor: weekLabels.map((w,i)=>i===6?'#7b1fa2':'#2e7d32'), borderWidth: 1, borderRadius: 4 }]
-  },
-  options: defaultOpts
-});
-
-new Chart(document.getElementById('chart-area'), {
-  type: 'bar',
-  data: {
-    labels: weekLabels,
-    datasets: [
-      { label: '五区成交面积(万㎡)', data: wuquArea, backgroundColor: 'rgba(26,95,168,0.65)', borderColor: '#1a5fa8', borderWidth: 1, borderRadius: 3 },
-      { label: '闽侯成交面积(万㎡)', data: minhouArea, backgroundColor: 'rgba(46,125,50,0.65)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 3 }
     ]
   },
   options: defaultOpts
