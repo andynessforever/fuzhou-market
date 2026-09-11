@@ -1721,7 +1721,9 @@ function renderHeader(){
 function renderVelocity(){
   if(!document.getElementById('vel-body')) return;
   const rows = VELOCITY_DATA.map(d=>{
-    const m = d.months;
+    // ⚠️ 源数据 months 与截图列序一致，为「8月 → 1月」倒序；
+    // 此处统一反转为规范序 m[0]=1月 … m[7]=8月，后续 m1..m8 映射与 avg3 才正确
+    const m = d.months.slice().reverse();
     const nz = m.filter(v=>v!==null && v!==undefined);
     const sum8 = nz.reduce((a,b)=>a+b,0);
     const last3 = m.slice(5,8).filter(v=>v!==null && v!==undefined);
@@ -1733,7 +1735,7 @@ function renderVelocity(){
   const activeN = activeRows.length;
   // 库存合计 / 累计网签 → 全量（市场事实快照）；其余判断性聚合 → 活跃盘
   const totInv = rows.reduce((a,r)=>a+r.stock,0);
-  const totCum = rows.reduce((a,r)=>a+r.total,0);
+  const totCum = rows.reduce((a,r)=>a+r.sum8,0); // 2026年累计 = 1–8月网签合计（原误取 total 历年累计字段）
   const totAvg3 = activeRows.reduce((a,r)=>a+(r.avg3||0),0);
   const cycles = activeRows.map(r=>r.cycle).filter(c=>c!==null && isFinite(c)).sort((a,b)=>a-b);
   const medCyc = cycles.length ? cycles[Math.floor(cycles.length/2)].toFixed(1) : '—';
