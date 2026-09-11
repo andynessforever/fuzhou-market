@@ -251,6 +251,64 @@ table.main-table thead th { box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
 .freq-count { font-size: 13px; font-weight: 800; color: #0f2a4a; min-width: 40px; text-align: right; }
 .freq-area { font-size: 11px; color: #999; min-width: 60px; }
 
+/* ===== 典型楼盘月均流速板块 ===== */
+.vel-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.vel-section h3 { font-size: 15px; font-weight: 700; color: #0f2a4a; margin-bottom: 12px; padding-left: 10px; border-left: 4px solid #1a5fa8; }
+.vel-section .vel-sub { font-size: 12px; color: #999; margin-bottom: 14px; line-height: 1.7; }
+
+.vel-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
+.vel-stat-card { background: #f8fafd; border-radius: 8px; padding: 12px 14px; border-left: 3px solid #1a5fa8; }
+.vel-stat-card .k { font-size: 11px; color: #888; margin-bottom: 4px; }
+.vel-stat-card .v { font-size: 18px; font-weight: 800; color: #0f2a4a; }
+.vel-stat-card .v small { font-size: 11px; font-weight: 500; color: #888; margin-left: 3px; }
+
+.vel-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.vel-filters .hint { font-size: 11px; color: #aaa; margin-left: 6px; }
+.vel-btn { background: #f0f2f5; color: #555; border: 1px solid #e0e3e8; padding: 5px 14px; border-radius: 18px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.vel-btn:hover { background: #e3eefb; color: #1a5fa8; border-color: #b8d3f0; }
+.vel-btn.on { background: #1a5fa8; color: #fff; border-color: #1a5fa8; }
+
+.vel-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #f0f2f5; }
+table.vel-table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+table.vel-table thead th { background: #f8fafd; color: #555; font-weight: 700; padding: 10px 8px; text-align: center; border-bottom: 2px solid #e0e3e8; border-right: 1px solid #f0f2f5; cursor: pointer; user-select: none; position: relative; }
+table.vel-table thead th:hover { background: #e8f0fc; color: #1a5fa8; }
+table.vel-table thead th .ar { font-size: 9px; color: #1a5fa8; margin-left: 2px; }
+table.vel-table tbody td { padding: 8px 8px; text-align: center; border-bottom: 1px solid #f0f2f5; border-right: 1px solid #f0f2f5; }
+table.vel-table tbody tr:hover td { background: #f0f6ff; }
+table.vel-table tbody tr:nth-child(even) td { background: #fafbfc; }
+table.vel-table tbody tr:nth-child(even):hover td { background: #e8f0fc; }
+table.vel-table tbody td.l { text-align: left; padding-left: 12px; }
+table.vel-table tbody td.rk { font-weight: 700; color: #0f2a4a; min-width: 36px; }
+table.vel-table tbody td.proj { font-weight: 600; color: #0f2a4a; min-width: 140px; }
+table.vel-table tbody td.inv { font-weight: 700; color: #d4500a; }
+table.vel-table tbody td.cum { font-weight: 700; color: #1a5fa8; }
+table.vel-table tbody td.avg3 { font-weight: 800; color: #1a5fa8; background: #fff8e1; }
+table.vel-table tbody td.m-na { color: #bbb; }
+table.vel-table tbody tr.tot td { background: #fff3e0; font-weight: 700; border-top: 3px solid #e65100; color: #0f2a4a; }
+
+.vel-tag { display: inline-block; font-size: 10px; padding: 1px 8px; border-radius: 10px; font-weight: 600; }
+.vel-tag.cangshan { background: #fff3e0; color: #e65100; }
+.vel-tag.jinan { background: #e8f0fc; color: #1a5fa8; }
+.vel-tag.taijiang { background: #fce4ec; color: #c2185b; }
+.vel-tag.gulou { background: #f3e5f5; color: #7b1fa2; }
+.vel-tag.mawei { background: #e8f5e9; color: #2e7d32; }
+.vel-tag.none { background: #f0f2f5; color: #888; }
+
+.vel-pill { display: inline-block; min-width: 32px; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 11px; }
+.vel-pill.p-fast { background: #e8f5e9; color: #2e7d32; }
+.vel-pill.p-mid  { background: #fff8e1; color: #e65100; }
+.vel-pill.p-slow { background: #ffebee; color: #c62828; }
+.vel-pill.p-na   { background: #f0f2f5; color: #aaa; }
+
+.vel-legend { display: flex; gap: 16px; margin-top: 14px; font-size: 11px; color: #777; flex-wrap: wrap; }
+.vel-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
 /* 图例 */
 .legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
@@ -511,6 +569,44 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
     <h3 id="freq-title">🏅 TOP10入榜项目出现频次（29期内）</h3>
     <p id="freq-sub" style="font-size:12px;color:#999;margin-bottom:14px;">仅展示五区项目 · 统计各项目在29期克而瑞TOP10图表中的入榜次数（W1-W29均来自TOP10图数据） · <strong style="color:#1a5fa8;">点击项目名称查看各期成交均价详情</strong></p>
     <div class="freq-cols" id="freq-cols"></div>
+  </div>
+
+  <!-- 典型楼盘月均流速 -->
+  <div class="vel-section">
+    <h3 id="vel-title">🚀 典型楼盘月均流速（<span id="vel-count">51</span> 盘 · 2026.1—8月）</h3>
+    <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (6+7+8月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。<strong style="color:#1a5fa8;">点击列头可排序</strong>。</p>
+    <div class="vel-stats" id="vel-stats"></div>
+    <div class="vel-filters" id="vel-filters"></div>
+    <div class="vel-table-wrap">
+      <table class="vel-table" id="vel-table">
+        <thead>
+          <tr>
+            <th data-k="rk">#</th>
+            <th data-k="name" style="text-align:left;padding-left:12px;">项目名称</th>
+            <th data-k="region">区域</th>
+            <th data-k="inv">商品库存</th>
+            <th data-k="cum">2026累计</th>
+            <th data-k="m1">1月</th>
+            <th data-k="m2">2月</th>
+            <th data-k="m3">3月</th>
+            <th data-k="m4">4月</th>
+            <th data-k="m5">5月</th>
+            <th data-k="m6">6月</th>
+            <th data-k="m7">7月</th>
+            <th data-k="m8">8月</th>
+            <th data-k="avg3" style="background:#fff8e1;color:#e65100;">近3月月均</th>
+            <th data-k="cycle" style="background:#fff8e1;color:#e65100;">去化(月)</th>
+          </tr>
+        </thead>
+        <tbody id="vel-body"></tbody>
+      </table>
+    </div>
+    <div class="vel-legend">
+      <span class="vel-legend-item"><span class="vel-pill p-fast">&lt;12</span> 快销（&lt;12月去化）</span>
+      <span class="vel-legend-item"><span class="vel-pill p-mid">12-30</span> 中位（12-30月）</span>
+      <span class="vel-legend-item"><span class="vel-pill p-slow">&gt;30</span> 滞销（&gt;30月去化）</span>
+      <span class="vel-legend-item" style="margin-left:auto;color:#aaa;">去化周期 = 商品库存 / 近3月月均网签</span>
+    </div>
   </div>
 
   
@@ -1400,6 +1496,62 @@ const projectDB = {
   },
 };
 
+// ===== 典型楼盘月均流速数据（51盘 · 2026.1—8月网签）=====
+// 数据格式：{ name, region: '仓山'|'晋安'|'鼓楼'|'台江'|'马尾'|'—', stock, total, months: [1月..8月] }
+const VELOCITY_DATA = [
+  { name:'首开端礼著',       region:'—',     stock:8,   total:110, months:[2,2,3,0,1,0,0,0] },
+  { name:'榕发锦城大观',     region:'晋安',   stock:1297,total:164, months:[10,13,17,8,7,11,1,2] },
+  { name:'国贸天琴华樾',     region:'晋安',   stock:325, total:208, months:[50,4,53,103,null,null,null,null] },
+  { name:'福厝·紫阳缦宸',   region:'马尾',   stock:28,  total:69,  months:[5,3,61,null,null,null,null,null] },
+  { name:'建发灏云',         region:'晋安',   stock:130, total:426, months:[7,7,9,7,14,8,4,4] },
+  { name:'左海紫阳隐翠',     region:'仓山',   stock:198, total:14,  months:[9,10,14,null,null,-10,-9,null] },
+  { name:'保利屏西天悦',     region:'鼓楼',   stock:154, total:503, months:[11,5,19,20,18,20,11,8] },
+  { name:'建发紫宸',         region:'—',     stock:33,  total:216, months:[1,1,1,1,2,5,5,5] },
+  { name:'绿城芝兰月华',     region:'—',     stock:15,  total:383, months:[0,2,9,10,1,6,8,7] },
+  { name:'华润中寰悦府',     region:'鼓楼',   stock:44,  total:300, months:[14,5,11,25,20,24,6,13] },
+  { name:'建总梧桐序',       region:'晋安',   stock:384, total:138, months:[5,8,9,25,5,6,9,8] },
+  { name:'榕发锦樾',         region:'台江',   stock:395, total:33,  months:[3,8,5,14,null,null,null,null] },
+  { name:'福厝·凤鸣天玺',   region:'台江',   stock:261, total:27,  months:[3,3,21,null,null,null,null,null] },
+  { name:'新榕合翠',         region:'—',     stock:33,  total:5,   months:[0,2,3,null,null,null,null,null] },
+  { name:'建发国贸·望樾',   region:'—',     stock:3,   total:377, months:[0,4,12,30,41,42,23,31] },
+  { name:'新榕云和悦',       region:'仓山',   stock:777, total:51,  months:[6,7,8,11,11,3,2,3] },
+  { name:'新投映悦湖',       region:'—',     stock:311, total:49,  months:[0,0,0,0,4,1,1,3] },
+  { name:'建总云璟未来',     region:'晋安',   stock:200, total:450, months:[10,21,30,35,38,41,5,20] },
+  { name:'建总江南尚璟',     region:'—',     stock:43,  total:503, months:[2,4,2,4,1,3,0,5] },
+  { name:'左海望悦',         region:'鼓楼',   stock:260, total:664, months:[11,7,19,32,22,41,15,22] },
+  { name:'榕发北源云筑',     region:'仓山',   stock:632, total:810, months:[23,37,24,47,25,29,8,13] },
+  { name:'新投映南台',       region:'仓山',   stock:62,  total:391, months:[6,7,13,12,6,0,1,0] },
+  { name:'建总领筑',         region:'仓山',   stock:25,  total:789, months:[1,0,0,1,1,0,1,0] },
+  { name:'新榕江和阅',       region:'台江',   stock:120, total:133, months:[3,7,5,14,7,5,4,7] },
+  { name:'榕发晴翠里',       region:'仓山',   stock:296, total:24,  months:[7,17,null,null,null,null,null,null] },
+  { name:'万科城市之光',     region:'仓山',   stock:205, total:2063,months:[16,9,10,21,19,16,9,18] },
+  { name:'建总流花溪（一期）', region:'仓山', stock:674, total:180, months:[4,9,12,10,7,10,2,6] },
+  { name:'建总流花溪（二期）', region:'仓山', stock:417, total:231, months:[7,11,18,17,17,27,6,7] },
+  { name:'左海烟山江翠',     region:'仓山',   stock:232, total:171, months:[3,1,3,5,4,4,2,6] },
+  { name:'榕发麓里云筑',     region:'晋安',   stock:403, total:399, months:[11,13,22,6,17,28,0,2] },
+  { name:'左海金山文翠',     region:'仓山',   stock:395, total:105, months:[8,11,17,13,5,4,2,0] },
+  { name:'建总瑞璟',         region:'仓山',   stock:136, total:143, months:[6,15,18,25,17,26,3,2] },
+  { name:'建总瑞玺',         region:'仓山',   stock:77,  total:89,  months:[9,4,4,11,12,13,12,8] },
+  { name:'新榕云行',         region:'仓山',   stock:762, total:10,  months:[4,1,1,3,0,0,0,0] },
+  { name:'建总雍玺湾',       region:'仓山',   stock:109, total:62,  months:[5,5,13,8,9,6,5,11] },
+  { name:'地铁栖江元璟',     region:'台江',   stock:121, total:133, months:[6,8,33,16,29,22,30,0] },
+  { name:'左海江湾道',       region:'仓山',   stock:291, total:65,  months:[5,9,29,7,7,3,3,5] },
+  { name:'左海锦翠',         region:'仓山',   stock:92,  total:14,  months:[0,1,7,6,null,null,null,null] },
+  { name:'左海滨江鸣翠',     region:'仓山',   stock:275, total:12,  months:[12,null,null,null,null,null,null,null] },
+  { name:'首开香颂花园',     region:'晋安',   stock:46,  total:438, months:[8,14,9,10,7,2,0,1] },
+  { name:'首开香悦',         region:'—',     stock:17,  total:207, months:[0,0,0,0,1,0,0,0] },
+  { name:'大东海玺悦',       region:'仓山',   stock:21,  total:196, months:[5,1,1,4,5,0,0,2] },
+  { name:'榕发揽湖',     region:'—',     stock:39,  total:601, months:[0,4,2,8,3,3,2,3] },
+  { name:'榕发誉湖',     region:'—',     stock:27,  total:349, months:[0,0,2,3,2,2,1,3] },
+  { name:'左海星悦颂',       region:'晋安',   stock:15,  total:369, months:[3,7,11,13,11,10,10,17] },
+  { name:'福厝远山拾里',     region:'晋安',   stock:502, total:422, months:[23,14,29,39,42,3,2,13] },
+  { name:'新投映万合',       region:'台江',   stock:143, total:201, months:[14,17,23,19,25,6,3,8] },
+  { name:'榕发城启未来',     region:'晋安',   stock:65,  total:331, months:[9,20,40,48,41,38,9,10] },
+  { name:'榕发城启未来（松间）',region:'晋安', stock:108, total:24,  months:[11,13,null,null,null,null,null,null] },
+  { name:'榕发湖樾',         region:'晋安',   stock:199, total:141, months:[11,8,24,27,25,19,4,12] },
+  { name:'福厝·澜湖悦宸',   region:'台江',   stock:158, total:66,  months:[10,51,5,null,null,null,null,null] }
+];
+
 // ===== 数据驱动渲染（主表 + 频次榜，由 JS 数组生成，更新只改数据不改结构）=====
 function sum(a){ return a.reduce((x,y)=>x+y,0); }
 function sumArr(a,b){ let s=0; for(let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
@@ -1514,9 +1666,137 @@ function renderHeader(){
   set('stat-minprice', fmt(Math.min.apply(null, wuquPrice)));
 }
 
+// ===== 典型楼盘月均流速渲染（区域筛选 + 表头排序 + 去化色阶）=====
+function renderVelocity(){
+  if(!document.getElementById('vel-body')) return;
+  const rows = VELOCITY_DATA.map(d=>{
+    const m = d.months;
+    const nz = m.filter(v=>v!==null && v!==undefined);
+    const sum8 = nz.reduce((a,b)=>a+b,0);
+    const last3 = m.slice(5,8).filter(v=>v!==null && v!==undefined);
+    const avg3 = last3.length===3 ? +((last3[0]+last3[1]+last3[2])/3).toFixed(1) : (last3.length ? +(last3.reduce((a,b)=>a+b,0)/last3.length).toFixed(1) : null);
+    const cycle = (avg3 && avg3>0) ? +(d.stock/avg3).toFixed(1) : null;
+    return Object.assign({}, d, { m1:m[0],m2:m[1],m3:m[2],m4:m[3],m5:m[4],m6:m[5],m7:m[6],m8:m[7], sum8, avg3, cycle });
+  });
+  const totInv = rows.reduce((a,r)=>a+r.stock,0);
+  const totCum = rows.reduce((a,r)=>a+r.total,0);
+  const totAvg3 = rows.reduce((a,r)=>a+(r.avg3||0),0);
+  const cycles = rows.map(r=>r.cycle).filter(c=>c!==null && isFinite(c)).sort((a,b)=>a-b);
+  const medCyc = cycles.length ? cycles[Math.floor(cycles.length/2)].toFixed(1) : '—';
+  const slowN = cycles.filter(c=>c>30).length;
+  const fastN = cycles.filter(c=>c<12).length;
+  const statsEl = document.getElementById('vel-stats');
+  if(statsEl) statsEl.innerHTML =
+    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">典型楼盘数</div><div class="v">'+rows.length+'<small>个</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#e65100;"><div class="k">商品库存合计</div><div class="v">'+fmt(totInv)+'<small>套</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#7b1fa2;"><div class="k">2026累计网签</div><div class="v">'+fmt(totCum)+'<small>套</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">近3月月均流速</div><div class="v">'+totAvg3.toFixed(0)+'<small>套/月</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#e65100;"><div class="k">去化周期中位</div><div class="v">'+medCyc+'<small>月</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#c62828;"><div class="k">滞销/快销</div><div class="v">'+slowN+' / '+fastN+'<small>个</small></div></div>';
+  const countEl = document.getElementById('vel-count');
+  if(countEl) countEl.textContent = rows.length;
+
+  const regions = ['全部','仓山','晋安','鼓楼','台江','马尾','—'];
+  const fEl = document.getElementById('vel-filters');
+  let curR = '全部';
+  let sortK = 'avg3';
+  let sortD = -1;
+  const regionMap = { '仓山':'cangshan','晋安':'jinan','鼓楼':'gulou','台江':'taijiang','马尾':'mawei','—':'none' };
+  function regionLabel(r){ return r==='全部'?'全部':(r==='—'?'未标注区域':r+'区'); }
+  function regionClass(r){ return regionMap[r] || 'none'; }
+  function pillClass(c){
+    if(c===null||!isFinite(c)) return 'p-na';
+    if(c<12) return 'p-fast';
+    if(c<=30) return 'p-mid';
+    return 'p-slow';
+  }
+  function numCell(v){
+    if(v===null||v===undefined) return '<td class="m-na">—</td>';
+    return '<td>'+v+'</td>';
+  }
+
+  function render(){
+    let list = rows.filter(r=>curR==='全部'||r.region===curR);
+    list.sort((a,b)=>{
+      let x=a[sortK],y=b[sortK];
+      if(x===undefined||x===null) x=sortD>0?1e9:-1e9;
+      if(y===undefined||y===null) y=sortD>0?1e9:-1e9;
+      if(typeof x==='string') return x.localeCompare(y,'zh')*sortD;
+      return (x-y)*sortD;
+    });
+    const ths = document.querySelectorAll('#vel-table thead th');
+    ths.forEach(th=>{ const ar=th.querySelector('.ar'); if(ar) ar.textContent=''; });
+    const sortTh = document.querySelector('#vel-table thead th[data-k="'+sortK+'"]');
+    if(sortTh){ let ar=sortTh.querySelector('.ar'); if(!ar){ar=document.createElement('span');ar.className='ar';sortTh.appendChild(ar);} ar.textContent = sortD>0?'▲':'▼'; }
+
+    const body = document.getElementById('vel-body');
+    const sumInv = list.reduce((a,r)=>a+r.stock,0);
+    const sumCum = list.reduce((a,r)=>a+r.total,0);
+    const sumAvg = list.reduce((a,r)=>a+(r.avg3||0),0);
+    const sumM1=list.reduce((a,r)=>a+(r.m1||0),0),sumM2=list.reduce((a,r)=>a+(r.m2||0),0);
+    const sumM3=list.reduce((a,r)=>a+(r.m3||0),0),sumM4=list.reduce((a,r)=>a+(r.m4||0),0);
+    const sumM5=list.reduce((a,r)=>a+(r.m5||0),0),sumM6=list.reduce((a,r)=>a+(r.m6||0),0);
+    const sumM7=list.reduce((a,r)=>a+(r.m7||0),0),sumM8=list.reduce((a,r)=>a+(r.m8||0),0);
+    body.innerHTML = list.map((r,i)=>
+      '<tr>'+
+      '<td class="rk">'+(i+1)+'</td>'+
+      '<td class="l proj">'+r.name+'</td>'+
+      '<td><span class="vel-tag '+regionClass(r.region)+'">'+regionLabel(r.region)+'</span></td>'+
+      '<td class="inv">'+fmt(r.stock)+'</td>'+
+      '<td class="cum">'+fmt(r.total)+'</td>'+
+      numCell(r.m1)+numCell(r.m2)+numCell(r.m3)+numCell(r.m4)+
+      numCell(r.m5)+numCell(r.m6)+numCell(r.m7)+numCell(r.m8)+
+      '<td class="avg3">'+(r.avg3===null?'—':r.avg3)+'</td>'+
+      '<td><span class="vel-pill '+pillClass(r.cycle)+'">'+(r.cycle===null?'—':r.cycle)+'</span></td>'+
+      '</tr>'
+    ).join('') +
+    '<tr class="tot"><td></td><td class="l">📊 合计（'+list.length+' 个项目）</td>'+
+    '<td>—</td>'+
+    '<td>'+fmt(sumInv)+'</td>'+
+    '<td>'+fmt(sumCum)+'</td>'+
+    '<td>'+sumM1+'</td><td>'+sumM2+'</td><td>'+sumM3+'</td><td>'+sumM4+'</td>'+
+    '<td>'+sumM5+'</td><td>'+sumM6+'</td><td>'+sumM7+'</td><td>'+sumM8+'</td>'+
+    '<td class="avg3">'+sumAvg.toFixed(1)+'</td>'+
+    '<td>—</td></tr>';
+  }
+
+  if(fEl){
+    fEl.innerHTML = '';
+    regions.forEach(r=>{
+      const b = document.createElement('button');
+      b.className = 'vel-btn'+(r===curR?' on':'');
+      b.textContent = regionLabel(r);
+      b.onclick = ()=>{
+        curR = r;
+        [...fEl.querySelectorAll('button.vel-btn')].forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');
+        render();
+      };
+      fEl.appendChild(b);
+    });
+    const hint = document.createElement('span');
+    hint.className = 'hint';
+    hint.textContent = '默认按「近3月月均」降序';
+    fEl.appendChild(hint);
+  }
+
+  document.querySelectorAll('#vel-table thead th[data-k]').forEach(th=>{
+    th.onclick = ()=>{
+      const k = th.getAttribute('data-k');
+      if(k==='rk') return;
+      if(sortK===k) sortD = -sortD;
+      else { sortK = k; sortD = (k==='name'||k==='region') ? 1 : -1; }
+      render();
+    };
+  });
+
+  render();
+}
+
 renderMainTable();
 renderFreq();
 renderHeader();
+renderVelocity();
 
 // ===== 大表格Charts =====
 const bgColors = weekLabels.map((w,i) => i===6 ? 'rgba(186,104,200,0.7)' : 'rgba(26,95,168,0.75)');
