@@ -303,15 +303,15 @@ table.vel-table tbody tr.tot td { background: #fff3e0; font-weight: 700; border-
 .vel-tag.mawei { background: #e8f5e9; color: #2e7d32; }
 .vel-tag.none { background: #f0f2f5; color: #888; }
 
-/* 搜索栏 */
-.vel-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.vel-search input { flex: 1; max-width: 320px; padding: 8px 12px; border: 1px solid #d8dee8; border-radius: 18px; font-size: 13px; color: #0f2a4a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 12px center; padding-left: 36px; }
-.vel-search input:focus { border-color: #1a5fa8; box-shadow: 0 0 0 3px rgba(26,95,168,0.12); }
-.vel-search input::placeholder { color: #b0b8c4; }
-.vel-search .clear { font-size: 11px; color: #1a5fa8; cursor: pointer; padding: 4px 10px; border-radius: 12px; background: #f0f2f5; }
-.vel-search .clear:hover { background: #e3eefb; }
-.vel-search .match-count { font-size: 11px; color: #888; margin-left: 4px; }
-.vel-search .match-count strong { color: #e65100; font-weight: 700; padding: 0 4px; }
+/* 搜索栏（市场流速 / TOP10频次榜 共用） */
+.vel-search, .freq-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.vel-search input, .freq-search input { flex: 1; max-width: 320px; padding: 8px 12px; border: 1px solid #d8dee8; border-radius: 18px; font-size: 13px; color: #0f2a4a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 12px center; padding-left: 36px; }
+.vel-search input:focus, .freq-search input:focus { border-color: #1a5fa8; box-shadow: 0 0 0 3px rgba(26,95,168,0.12); }
+.vel-search input::placeholder, .freq-search input::placeholder { color: #b0b8c4; }
+.vel-search .clear, .freq-search .clear { font-size: 11px; color: #1a5fa8; cursor: pointer; padding: 4px 10px; border-radius: 12px; background: #f0f2f5; }
+.vel-search .clear:hover, .freq-search .clear:hover { background: #e3eefb; }
+.vel-search .match-count, .freq-search .match-count { font-size: 11px; color: #888; margin-left: 4px; }
+.vel-search .match-count strong, .freq-search .match-count strong { color: #e65100; font-weight: 700; padding: 0 4px; }
 
 .vel-pill { display: inline-block; min-width: 32px; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 11px; }
 .vel-pill.p-fast { background: #e8f5e9; color: #2e7d32; }
@@ -581,6 +581,11 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
     <div class="freq-section">
     <h3 id="freq-title">🏅 TOP10入榜项目出现频次（29期内）</h3>
     <p id="freq-sub" style="font-size:12px;color:#999;margin-bottom:14px;">仅展示五区项目 · 统计各项目在29期克而瑞TOP10图表中的入榜次数（W1-W29均来自TOP10图数据） · <strong style="color:#1a5fa8;">点击项目名称查看各期成交均价详情</strong></p>
+    <div class="freq-search">
+      <input type="text" id="freq-q" placeholder="🔍 按项目名搜索（如：建总 / 左海 / 榕发 / 福厝）" autocomplete="off" />
+      <span class="clear" id="freq-q-clear" style="display:none;">清除</span>
+      <span class="match-count" id="freq-q-count"></span>
+    </div>
     <div class="freq-cols" id="freq-cols"></div>
   </div>
 
@@ -1620,21 +1625,18 @@ function renderMainTable(){
 function renderFreq(){
   const colsEl = document.getElementById('freq-cols');
   if(!colsEl) return;
-  const items = [];
+  const allItems = [];
   for(const name in projectDB){
     const d = projectDB[name];
     if(d.zone !== '五区') continue;
     const cnt = d.records ? d.records.length : 0;
     if(cnt < 2) continue;
-    items.push({name, cnt});
+    allItems.push({name, cnt});
   }
-  items.sort((a,b)=> b.cnt - a.cnt);
-  const maxCnt = items.length ? items[0].cnt : 1;
-  const uniq = [...new Set(items.map(i=>i.cnt))].sort((a,b)=>b-a);
+  allItems.sort((a,b)=> b.cnt - a.cnt);
+  const maxCnt = allItems.length ? allItems[0].cnt : 1;
+  const uniq = [...new Set(allItems.map(i=>i.cnt))].sort((a,b)=>b-a);
   const secondMax = uniq.length>1 ? uniq[1] : null;
-  const half = Math.ceil(items.length/2);
-  const col1 = items.slice(0, half);
-  const col2 = items.slice(half);
   function rankClass(cnt){
     if(cnt===maxCnt) return 'rank-1';
     if(secondMax!==null && cnt===secondMax) return 'rank-2';
@@ -1652,9 +1654,40 @@ function renderFreq(){
         + '</div>';
     }).join('');
   }
-  colsEl.innerHTML =
-    '<div class="freq-col"><div class="freq-col-title wuqu">🏙️ 五区项目（≥2期 · 第1列）</div><div class="freq-list">'+colHtml(col1)+'</div></div>'
-    + '<div class="freq-col"><div class="freq-col-title wuqu">🏙️ 五区项目（≥2期 · 第2列）</div><div class="freq-list">'+colHtml(col2)+'</div></div>';
+  const qEl = document.getElementById('freq-q');
+  const qClearEl = document.getElementById('freq-q-clear');
+  const qCountEl = document.getElementById('freq-q-count');
+  let curQ = '';
+  function draw(){
+    let items = allItems;
+    if(curQ){
+      const q = curQ.toLowerCase();
+      items = allItems.filter(i => i.name.toLowerCase().indexOf(q) >= 0);
+    }
+    if(qCountEl){
+      qCountEl.innerHTML = curQ ? '<strong>'+items.length+'</strong> / '+allItems.length+' 个匹配' : '';
+    }
+    if(items.length===0){
+      colsEl.innerHTML = '<div style="flex:1;padding:28px 12px;text-align:center;color:#aaa;font-size:13px;background:#fafbfc;border-radius:8px;">🔍 未匹配到包含「<strong style="color:#e65100;">'+curQ+'</strong>」的项目</div>';
+      return;
+    }
+    if(curQ){
+      colsEl.innerHTML = '<div class="freq-col" style="flex:1;"><div class="freq-col-title wuqu">🔍 搜索结果（'+items.length+' 个 · 按入榜次数降序）</div><div class="freq-list">'+colHtml(items)+'</div></div>';
+      return;
+    }
+    const half = Math.ceil(items.length/2);
+    colsEl.innerHTML =
+      '<div class="freq-col"><div class="freq-col-title wuqu">🏙️ 五区项目（≥2期 · 第1列）</div><div class="freq-list">'+colHtml(items.slice(0, half))+'</div></div>'
+      + '<div class="freq-col"><div class="freq-col-title wuqu">🏙️ 五区项目（≥2期 · 第2列）</div><div class="freq-list">'+colHtml(items.slice(half))+'</div></div>';
+  }
+  if(qEl){
+    qEl.oninput = ()=>{ curQ = qEl.value.trim(); if(qClearEl) qClearEl.style.display = curQ?'inline-block':'none'; draw(); };
+    qEl.onkeydown = (e)=>{ if(e.key==='Escape'){ qEl.value=''; curQ=''; if(qClearEl) qClearEl.style.display='none'; draw(); } };
+  }
+  if(qClearEl){
+    qClearEl.onclick = ()=>{ if(qEl){ qEl.value=''; qEl.focus(); } curQ=''; qClearEl.style.display='none'; draw(); };
+  }
+  draw();
   const N = weeks.length;
   const t = document.getElementById('freq-title');
   if(t) t.textContent = '🏅 TOP10入榜项目出现频次（'+N+'期内）';
