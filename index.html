@@ -587,7 +587,7 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
   <!-- 典型楼盘月均流速 -->
   <div class="vel-section">
     <h3 id="vel-title">🚀 典型楼盘月均流速（<span id="vel-count">51</span> 盘 · 2026.1—8月）</h3>
-    <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (6+7+8月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。<strong style="color:#1a5fa8;">点击列头可排序</strong>。</p>
+    <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (6+7+8月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。聚合统计仅纳入<strong style="color:#e65100;">库存 ≥30 套的活跃盘</strong>（避免尾盘拉偏中位数与月均）。<strong style="color:#1a5fa8;">点击列头可排序</strong>。</p>
     <div class="vel-stats" id="vel-stats"></div>
     <div class="vel-search">
       <input type="text" id="vel-q" placeholder="🔍 按项目名搜索（如：华润 / 福厝 / 国贸 / 万科）" autocomplete="off" />
@@ -604,14 +604,14 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
             <th data-k="region">区域</th>
             <th data-k="inv">商品库存</th>
             <th data-k="cum">2026累计</th>
-            <th data-k="m1">1月</th>
-            <th data-k="m2">2月</th>
-            <th data-k="m3">3月</th>
-            <th data-k="m4">4月</th>
-            <th data-k="m5">5月</th>
-            <th data-k="m6">6月</th>
-            <th data-k="m7">7月</th>
             <th data-k="m8">8月</th>
+            <th data-k="m7">7月</th>
+            <th data-k="m6">6月</th>
+            <th data-k="m5">5月</th>
+            <th data-k="m4">4月</th>
+            <th data-k="m3">3月</th>
+            <th data-k="m2">2月</th>
+            <th data-k="m1">1月</th>
             <th data-k="avg3" style="background:#fff8e1;color:#e65100;">近3月月均</th>
             <th data-k="cycle" style="background:#fff8e1;color:#e65100;">去化(月)</th>
           </tr>
@@ -1694,23 +1694,26 @@ function renderVelocity(){
     const last3 = m.slice(5,8).filter(v=>v!==null && v!==undefined);
     const avg3 = last3.length===3 ? +((last3[0]+last3[1]+last3[2])/3).toFixed(1) : (last3.length ? +(last3.reduce((a,b)=>a+b,0)/last3.length).toFixed(1) : null);
     const cycle = (avg3 && avg3>0) ? +(d.stock/avg3).toFixed(1) : null;
-    return Object.assign({}, d, { m1:m[0],m2:m[1],m3:m[2],m4:m[3],m5:m[4],m6:m[5],m7:m[6],m8:m[7], sum8, avg3, cycle });
+    return Object.assign({}, d, { m1:m[0],m2:m[1],m3:m[2],m4:m[3],m5:m[4],m6:m[5],m7:m[6],m8:m[7], sum8, avg3, cycle, active: d.stock >= 30 });
   });
+  const activeRows = rows.filter(r=>r.active);
+  const activeN = activeRows.length;
+  // 库存合计 / 累计网签 → 全量（市场事实快照）；其余判断性聚合 → 活跃盘
   const totInv = rows.reduce((a,r)=>a+r.stock,0);
   const totCum = rows.reduce((a,r)=>a+r.total,0);
-  const totAvg3 = rows.reduce((a,r)=>a+(r.avg3||0),0);
-  const cycles = rows.map(r=>r.cycle).filter(c=>c!==null && isFinite(c)).sort((a,b)=>a-b);
+  const totAvg3 = activeRows.reduce((a,r)=>a+(r.avg3||0),0);
+  const cycles = activeRows.map(r=>r.cycle).filter(c=>c!==null && isFinite(c)).sort((a,b)=>a-b);
   const medCyc = cycles.length ? cycles[Math.floor(cycles.length/2)].toFixed(1) : '—';
   const slowN = cycles.filter(c=>c>30).length;
   const fastN = cycles.filter(c=>c<12).length;
   const statsEl = document.getElementById('vel-stats');
   if(statsEl) statsEl.innerHTML =
-    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">典型楼盘数</div><div class="v">'+rows.length+'<small>个</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">活跃盘 / 总盘</div><div class="v">'+activeN+' <small style="color:#bbb;font-weight:600;">/ '+rows.length+'</small><small>个</small></div></div>'+
     '<div class="vel-stat-card" style="border-left-color:#e65100;"><div class="k">商品库存合计</div><div class="v">'+fmt(totInv)+'<small>套</small></div></div>'+
     '<div class="vel-stat-card" style="border-left-color:#7b1fa2;"><div class="k">2026累计网签</div><div class="v">'+fmt(totCum)+'<small>套</small></div></div>'+
-    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">近3月月均流速</div><div class="v">'+totAvg3.toFixed(0)+'<small>套/月</small></div></div>'+
-    '<div class="vel-stat-card" style="border-left-color:#e65100;"><div class="k">去化周期中位</div><div class="v">'+medCyc+'<small>月</small></div></div>'+
-    '<div class="vel-stat-card" style="border-left-color:#c62828;"><div class="k">滞销/快销</div><div class="v">'+slowN+' / '+fastN+'<small>个</small></div></div>';
+    '<div class="vel-stat-card" style="border-left-color:#1a5fa8;"><div class="k">近3月月均流速<small style="color:#888;font-weight:500;margin-left:4px;">（活跃）</small></div><div class="v">'+totAvg3.toFixed(0)+'<small>套/月</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#e65100;"><div class="k">去化周期中位<small style="color:#888;font-weight:500;margin-left:4px;">（活跃）</small></div><div class="v">'+medCyc+'<small>月</small></div></div>'+
+    '<div class="vel-stat-card" style="border-left-color:#c62828;"><div class="k">滞销/快销<small style="color:#888;font-weight:500;margin-left:4px;">（活跃）</small></div><div class="v">'+slowN+' / '+fastN+'<small>个</small></div></div>';
   const countEl = document.getElementById('vel-count');
   if(countEl) countEl.textContent = rows.length;
 
@@ -1766,32 +1769,33 @@ function renderVelocity(){
         ? (curQ? '<strong>'+list.length+'</strong> / '+rows.length+' 个匹配': '')
         : '<strong>'+list.length+'</strong> / '+rows.length+' 个匹配';
     }
+    const activeList = list.filter(r=>r.active);
     const sumInv = list.reduce((a,r)=>a+r.stock,0);
     const sumCum = list.reduce((a,r)=>a+r.total,0);
-    const sumAvg = list.reduce((a,r)=>a+(r.avg3||0),0);
-    const sumM1=list.reduce((a,r)=>a+(r.m1||0),0),sumM2=list.reduce((a,r)=>a+(r.m2||0),0);
-    const sumM3=list.reduce((a,r)=>a+(r.m3||0),0),sumM4=list.reduce((a,r)=>a+(r.m4||0),0);
-    const sumM5=list.reduce((a,r)=>a+(r.m5||0),0),sumM6=list.reduce((a,r)=>a+(r.m6||0),0);
-    const sumM7=list.reduce((a,r)=>a+(r.m7||0),0),sumM8=list.reduce((a,r)=>a+(r.m8||0),0);
+    const sumAvg = activeList.reduce((a,r)=>a+(r.avg3||0),0);
+    const sumM8=activeList.reduce((a,r)=>a+(r.m8||0),0),sumM7=activeList.reduce((a,r)=>a+(r.m7||0),0);
+    const sumM6=activeList.reduce((a,r)=>a+(r.m6||0),0),sumM5=activeList.reduce((a,r)=>a+(r.m5||0),0);
+    const sumM4=activeList.reduce((a,r)=>a+(r.m4||0),0),sumM3=activeList.reduce((a,r)=>a+(r.m3||0),0);
+    const sumM2=activeList.reduce((a,r)=>a+(r.m2||0),0),sumM1=activeList.reduce((a,r)=>a+(r.m1||0),0);
     body.innerHTML = list.map((r,i)=>
-      '<tr>'+
+      '<tr'+(r.active?'':' style="background:#fafafa;"')+'>'+
       '<td class="rk">'+(i+1)+'</td>'+
-      '<td class="l proj">'+r.name+'</td>'+
+      '<td class="l proj">'+r.name+(r.active?'':' <small style="color:#bbb;font-weight:400;">(尾盘)</small>')+'</td>'+
       '<td><span class="vel-tag '+regionClass(r.region)+'">'+regionLabel(r.region)+'</span></td>'+
       '<td class="inv">'+fmt(r.stock)+'</td>'+
       '<td class="cum">'+fmt(r.total)+'</td>'+
-      numCell(r.m1)+numCell(r.m2)+numCell(r.m3)+numCell(r.m4)+
-      numCell(r.m5)+numCell(r.m6)+numCell(r.m7)+numCell(r.m8)+
+      numCell(r.m8)+numCell(r.m7)+numCell(r.m6)+numCell(r.m5)+
+      numCell(r.m4)+numCell(r.m3)+numCell(r.m2)+numCell(r.m1)+
       '<td class="avg3">'+(r.avg3===null?'—':r.avg3)+'</td>'+
       '<td><span class="vel-pill '+pillClass(r.cycle)+'">'+(r.cycle===null?'—':r.cycle)+'</span></td>'+
       '</tr>'
     ).join('') +
-    '<tr class="tot"><td></td><td class="l">📊 合计（'+list.length+' 个项目）</td>'+
+    '<tr class="tot"><td></td><td class="l">📊 合计（'+list.length+' 个项目 · <span style="color:#e65100;">活跃盘 '+activeList.length+' 个</span>）</td>'+
     '<td>—</td>'+
     '<td>'+fmt(sumInv)+'</td>'+
     '<td>'+fmt(sumCum)+'</td>'+
-    '<td>'+sumM1+'</td><td>'+sumM2+'</td><td>'+sumM3+'</td><td>'+sumM4+'</td>'+
-    '<td>'+sumM5+'</td><td>'+sumM6+'</td><td>'+sumM7+'</td><td>'+sumM8+'</td>'+
+    '<td>'+sumM8+'</td><td>'+sumM7+'</td><td>'+sumM6+'</td><td>'+sumM5+'</td>'+
+    '<td>'+sumM4+'</td><td>'+sumM3+'</td><td>'+sumM2+'</td><td>'+sumM1+'</td>'+
     '<td class="avg3">'+sumAvg.toFixed(1)+'</td>'+
     '<td>—</td></tr>';
   }
