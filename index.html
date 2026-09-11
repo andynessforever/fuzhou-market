@@ -274,9 +274,12 @@ table.main-table thead th { box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
 .vel-btn:hover { background: #e3eefb; color: #1a5fa8; border-color: #b8d3f0; }
 .vel-btn.on { background: #1a5fa8; color: #fff; border-color: #1a5fa8; }
 
-.vel-table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #f0f2f5; }
+.vel-table-wrap { overflow-x: auto; overflow-y: auto; max-height: 560px; border-radius: 8px; border: 1px solid #f0f2f5; }
+.vel-table-wrap::-webkit-scrollbar { width: 8px; height: 8px; }
+.vel-table-wrap::-webkit-scrollbar-thumb { background: #cfd4dc; border-radius: 4px; }
+.vel-table-wrap::-webkit-scrollbar-thumb:hover { background: #8a99ad; }
 table.vel-table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-table.vel-table thead th { background: #f8fafd; color: #555; font-weight: 700; padding: 10px 8px; text-align: center; border-bottom: 2px solid #e0e3e8; border-right: 1px solid #f0f2f5; cursor: pointer; user-select: none; position: relative; }
+table.vel-table thead th { background: #f8fafd; color: #555; font-weight: 700; padding: 10px 8px; text-align: center; border-bottom: 2px solid #e0e3e8; border-right: 1px solid #f0f2f5; cursor: pointer; user-select: none; position: sticky; top: 0; z-index: 5; box-shadow: 0 1px 0 #d3dae6; }
 table.vel-table thead th:hover { background: #e8f0fc; color: #1a5fa8; }
 table.vel-table thead th .ar { font-size: 9px; color: #1a5fa8; margin-left: 2px; }
 table.vel-table tbody td { padding: 8px 8px; text-align: center; border-bottom: 1px solid #f0f2f5; border-right: 1px solid #f0f2f5; }
@@ -299,6 +302,16 @@ table.vel-table tbody tr.tot td { background: #fff3e0; font-weight: 700; border-
 .vel-tag.gulou { background: #f3e5f5; color: #7b1fa2; }
 .vel-tag.mawei { background: #e8f5e9; color: #2e7d32; }
 .vel-tag.none { background: #f0f2f5; color: #888; }
+
+/* 搜索栏 */
+.vel-search { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.vel-search input { flex: 1; max-width: 320px; padding: 8px 12px; border: 1px solid #d8dee8; border-radius: 18px; font-size: 13px; color: #0f2a4a; outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 12px center; padding-left: 36px; }
+.vel-search input:focus { border-color: #1a5fa8; box-shadow: 0 0 0 3px rgba(26,95,168,0.12); }
+.vel-search input::placeholder { color: #b0b8c4; }
+.vel-search .clear { font-size: 11px; color: #1a5fa8; cursor: pointer; padding: 4px 10px; border-radius: 12px; background: #f0f2f5; }
+.vel-search .clear:hover { background: #e3eefb; }
+.vel-search .match-count { font-size: 11px; color: #888; margin-left: 4px; }
+.vel-search .match-count strong { color: #e65100; font-weight: 700; padding: 0 4px; }
 
 .vel-pill { display: inline-block; min-width: 32px; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 11px; }
 .vel-pill.p-fast { background: #e8f5e9; color: #2e7d32; }
@@ -576,6 +589,11 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
     <h3 id="vel-title">🚀 典型楼盘月均流速（<span id="vel-count">51</span> 盘 · 2026.1—8月）</h3>
     <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (6+7+8月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。<strong style="color:#1a5fa8;">点击列头可排序</strong>。</p>
     <div class="vel-stats" id="vel-stats"></div>
+    <div class="vel-search">
+      <input type="text" id="vel-q" placeholder="🔍 按项目名搜索（如：华润 / 福厝 / 国贸 / 万科）" autocomplete="off" />
+      <span class="clear" id="vel-q-clear" style="display:none;">清除</span>
+      <span class="match-count" id="vel-q-count"></span>
+    </div>
     <div class="vel-filters" id="vel-filters"></div>
     <div class="vel-table-wrap">
       <table class="vel-table" id="vel-table">
@@ -1698,7 +1716,11 @@ function renderVelocity(){
 
   const regions = ['全部','仓山','晋安','鼓楼','台江','马尾','—'];
   const fEl = document.getElementById('vel-filters');
+  const qEl = document.getElementById('vel-q');
+  const qClearEl = document.getElementById('vel-q-clear');
+  const qCountEl = document.getElementById('vel-q-count');
   let curR = '全部';
+  let curQ = '';
   let sortK = 'avg3';
   let sortD = -1;
   const regionMap = { '仓山':'cangshan','晋安':'jinan','鼓楼':'gulou','台江':'taijiang','马尾':'mawei','—':'none' };
@@ -1717,6 +1739,10 @@ function renderVelocity(){
 
   function render(){
     let list = rows.filter(r=>curR==='全部'||r.region===curR);
+    if(curQ){
+      const q = curQ.toLowerCase();
+      list = list.filter(r => r.name.toLowerCase().indexOf(q) >= 0);
+    }
     list.sort((a,b)=>{
       let x=a[sortK],y=b[sortK];
       if(x===undefined||x===null) x=sortD>0?1e9:-1e9;
@@ -1730,6 +1756,16 @@ function renderVelocity(){
     if(sortTh){ let ar=sortTh.querySelector('.ar'); if(!ar){ar=document.createElement('span');ar.className='ar';sortTh.appendChild(ar);} ar.textContent = sortD>0?'▲':'▼'; }
 
     const body = document.getElementById('vel-body');
+    if(list.length===0){
+      body.innerHTML = '<tr><td colspan="16" style="padding:28px 12px;text-align:center;color:#aaa;font-size:13px;background:#fafbfc;">🔍 在「'+(curR==='全部'?'全部区域':regionLabel(curR))+'」中未匹配到包含「<strong style="color:#e65100;">'+curQ+'</strong>」的项目</td></tr>';
+      if(qCountEl){ qCountEl.innerHTML = '<strong>0</strong> 个匹配'; }
+      return;
+    }
+    if(qCountEl){
+      qCountEl.innerHTML = list.length===rows.length
+        ? (curQ? '<strong>'+list.length+'</strong> / '+rows.length+' 个匹配': '')
+        : '<strong>'+list.length+'</strong> / '+rows.length+' 个匹配';
+    }
     const sumInv = list.reduce((a,r)=>a+r.stock,0);
     const sumCum = list.reduce((a,r)=>a+r.total,0);
     const sumAvg = list.reduce((a,r)=>a+(r.avg3||0),0);
@@ -1778,6 +1814,25 @@ function renderVelocity(){
     hint.className = 'hint';
     hint.textContent = '默认按「近3月月均」降序';
     fEl.appendChild(hint);
+  }
+
+  if(qEl){
+    qEl.addEventListener('input', ()=>{
+      curQ = qEl.value.trim();
+      if(qClearEl) qClearEl.style.display = curQ ? 'inline-block' : 'none';
+      render();
+    });
+    qEl.addEventListener('keydown', (e)=>{
+      if(e.key==='Escape'){ qEl.value=''; curQ=''; if(qClearEl) qClearEl.style.display='none'; render(); }
+    });
+  }
+  if(qClearEl){
+    qClearEl.addEventListener('click', ()=>{
+      if(qEl){ qEl.value=''; qEl.focus(); }
+      curQ = '';
+      qClearEl.style.display = 'none';
+      render();
+    });
   }
 
   document.querySelectorAll('#vel-table thead th[data-k]').forEach(th=>{
