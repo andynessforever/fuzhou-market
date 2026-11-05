@@ -591,8 +591,8 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
 
   <!-- 典型楼盘月均流速 -->
   <div class="vel-section">
-    <h3 id="vel-title">🚀 典型楼盘月均流速（<span id="vel-count">51</span> 盘 · 2026.1—8月）</h3>
-    <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (6+7+8月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。聚合统计仅纳入<strong style="color:#e65100;">库存 ≥30 套的活跃盘</strong>（避免尾盘拉偏中位数与月均）。<strong style="color:#1a5fa8;">点击列头可排序</strong>。</p>
+    <h3 id="vel-title">🚀 典型楼盘月均流速（<span id="vel-count">56</span> 盘 · 2026.1—10月）</h3>
+    <p class="vel-sub" id="vel-sub">按「商品库存 ÷ 近3月月均网签」计算去化周期；月均流速 = (8+9+10月网签) ÷ 3；数据来自左海口径盘点表（含主城五区 + 马尾典型盘，闽侯不纳入）。聚合统计仅纳入<strong style="color:#e65100;">库存 ≥30 套的活跃盘</strong>（避免尾盘拉偏中位数与月均）；「累计网签」为历年累计口径，与顶部「2026累计网签（1–10月）」不同。<strong style="color:#1a5fa8;">点击列头可排序</strong>；10 月首开新盘仅有单月网签，其月均流速与去化周期仅供参考。</p>
     <div class="vel-stats" id="vel-stats"></div>
     <div class="vel-search">
       <input type="text" id="vel-q" placeholder="🔍 按项目名搜索（如：华润 / 福厝 / 国贸 / 万科）" autocomplete="off" />
@@ -608,7 +608,9 @@ table.modal-table tbody tr:nth-child(even) td { background: #f8fafd; }
             <th data-k="name" style="text-align:left;padding-left:12px;">项目名称</th>
             <th data-k="region">区域</th>
             <th data-k="inv">商品库存</th>
-            <th data-k="cum">2026累计</th>
+            <th data-k="cum">累计网签</th>
+            <th data-k="m10">10月</th>
+            <th data-k="m9">9月</th>
             <th data-k="m8">8月</th>
             <th data-k="m7">7月</th>
             <th data-k="m6">6月</th>
@@ -1702,60 +1704,66 @@ const projectDB = {
   },
 };
 
-// ===== 典型楼盘月均流速数据（51盘 · 2026.1—8月网签）=====
-// 数据格式：{ name, region: '仓山'|'晋安'|'鼓楼'|'台江'|'马尾'|'—', stock, total, months: [1月..8月] }
+// ===== 典型楼盘月均流速数据（56盘 · 2026.1—10月网签）=====
+// 数据格式：{ name, region: '仓山'|'晋安'|'鼓楼'|'台江'|'马尾'|'—', stock, total, months: [10月..1月] }
+// ⚠️ months 与监测表列序一致，为「10月 → 1月」倒序；未开盘月份为 null 且排在数组尾部。
 const VELOCITY_DATA = [
-  { name:'首开端礼著',       region:'—',     stock:8,   total:110, months:[2,2,3,0,1,0,0,0] },
-  { name:'榕发锦城大观',     region:'晋安',   stock:1297,total:164, months:[10,13,17,8,7,11,1,2] },
-  { name:'国贸天琴华樾',     region:'晋安',   stock:325, total:208, months:[50,4,53,103,null,null,null,null] },
-  { name:'福厝·紫阳缦宸',   region:'马尾',   stock:28,  total:69,  months:[5,3,61,null,null,null,null,null] },
-  { name:'建发灏云',         region:'晋安',   stock:130, total:426, months:[7,7,9,7,14,8,4,4] },
-  { name:'左海紫阳隐翠',     region:'仓山',   stock:198, total:14,  months:[9,10,14,null,null,-10,-9,null] },
-  { name:'保利屏西天悦',     region:'鼓楼',   stock:154, total:503, months:[11,5,19,20,18,20,11,8] },
-  { name:'建发紫宸',         region:'—',     stock:33,  total:216, months:[1,1,1,1,2,5,5,5] },
-  { name:'绿城芝兰月华',     region:'—',     stock:15,  total:383, months:[0,2,9,10,1,6,8,7] },
-  { name:'华润中寰悦府',     region:'鼓楼',   stock:44,  total:300, months:[14,5,11,25,20,24,6,13] },
-  { name:'建总梧桐序',       region:'晋安',   stock:384, total:138, months:[5,8,9,25,5,6,9,8] },
-  { name:'榕发锦樾',         region:'台江',   stock:395, total:33,  months:[3,8,5,14,null,null,null,null] },
-  { name:'福厝·凤鸣天玺',   region:'台江',   stock:261, total:27,  months:[3,3,21,null,null,null,null,null] },
-  { name:'新榕合翠',         region:'—',     stock:33,  total:5,   months:[0,2,3,null,null,null,null,null] },
-  { name:'建发国贸·望樾',   region:'—',     stock:3,   total:377, months:[0,4,12,30,41,42,23,31] },
-  { name:'新榕云和悦',       region:'晋安',   stock:777, total:51,  months:[6,7,8,11,11,3,2,3] },
-  { name:'新投映悦湖',       region:'—',     stock:311, total:49,  months:[0,0,0,0,4,1,1,3] },
-  { name:'建总云璟未来',     region:'晋安',   stock:200, total:450, months:[10,21,30,35,38,41,5,20] },
-  { name:'建总江南尚璟',     region:'—',     stock:43,  total:503, months:[2,4,2,4,1,3,0,5] },
-  { name:'左海望悦',         region:'鼓楼',   stock:260, total:664, months:[11,7,19,32,22,41,15,22] },
-  { name:'榕发北源云筑',     region:'仓山',   stock:632, total:810, months:[23,37,24,47,25,29,8,13] },
-  { name:'新投映南台',       region:'仓山',   stock:62,  total:391, months:[6,7,13,12,6,0,1,0] },
-  { name:'建总领筑',         region:'仓山',   stock:25,  total:789, months:[1,0,0,1,1,0,1,0] },
-  { name:'新榕江和阅',       region:'台江',   stock:120, total:133, months:[3,7,5,14,7,5,4,7] },
-  { name:'榕发晴翠里',       region:'仓山',   stock:296, total:24,  months:[7,17,null,null,null,null,null,null] },
-  { name:'万科城市之光',     region:'仓山',   stock:205, total:2063,months:[16,9,10,21,19,16,9,18] },
-  { name:'建总流花溪（一期）', region:'仓山', stock:674, total:180, months:[4,9,12,10,7,10,2,6] },
-  { name:'建总流花溪（二期）', region:'仓山', stock:417, total:231, months:[7,11,18,17,17,27,6,7] },
-  { name:'左海烟山江翠',     region:'仓山',   stock:232, total:171, months:[3,1,3,5,4,4,2,6] },
-  { name:'榕发麓里云筑',     region:'晋安',   stock:403, total:399, months:[11,13,22,6,17,28,0,2] },
-  { name:'左海金山文翠',     region:'仓山',   stock:395, total:105, months:[8,11,17,13,5,4,2,0] },
-  { name:'建总瑞璟',         region:'仓山',   stock:136, total:143, months:[6,15,18,25,17,26,3,2] },
-  { name:'建总瑞玺',         region:'仓山',   stock:77,  total:89,  months:[9,4,4,11,12,13,12,8] },
-  { name:'新榕云行',         region:'仓山',   stock:762, total:10,  months:[4,1,1,3,0,0,0,0] },
-  { name:'建总雍玺湾',       region:'仓山',   stock:109, total:62,  months:[5,5,13,8,9,6,5,11] },
-  { name:'地铁栖江元璟',     region:'台江',   stock:121, total:133, months:[6,8,33,16,29,22,30,0] },
-  { name:'左海江湾道',       region:'仓山',   stock:291, total:65,  months:[5,9,29,7,7,3,3,5] },
-  { name:'左海锦翠',         region:'仓山',   stock:92,  total:14,  months:[0,1,7,6,null,null,null,null] },
-  { name:'左海滨江鸣翠',     region:'仓山',   stock:275, total:12,  months:[12,null,null,null,null,null,null,null] },
-  { name:'首开香颂花园',     region:'晋安',   stock:46,  total:438, months:[8,14,9,10,7,2,0,1] },
-  { name:'首开香悦',         region:'晋安',   stock:17,  total:207, months:[0,0,0,0,1,0,0,0] },
-  { name:'大东海玺悦',       region:'仓山',   stock:21,  total:196, months:[5,1,1,4,5,0,0,2] },
-  { name:'榕发揽湖',     region:'—',     stock:39,  total:601, months:[0,4,2,8,3,3,2,3] },
-  { name:'榕发誉湖',     region:'—',     stock:27,  total:349, months:[0,0,2,3,2,2,1,3] },
-  { name:'左海星悦颂',       region:'晋安',   stock:15,  total:369, months:[3,7,11,13,11,10,10,17] },
-  { name:'福厝远山拾里',     region:'晋安',   stock:502, total:422, months:[23,14,29,39,42,3,2,13] },
-  { name:'新投映万合',       region:'台江',   stock:143, total:201, months:[14,17,23,19,25,6,3,8] },
-  { name:'榕发城启未来',     region:'晋安',   stock:65,  total:331, months:[9,20,40,48,41,38,9,10] },
-  { name:'榕发城启未来（松间）',region:'晋安', stock:108, total:24,  months:[11,13,null,null,null,null,null,null] },
-  { name:'榕发湖樾',         region:'晋安',   stock:199, total:141, months:[11,8,24,27,25,19,4,12] },
-  { name:'福厝·澜湖悦宸',   region:'台江',   stock:158, total:66,  months:[10,51,5,null,null,null,null,null] }
+  { name:'首开端礼著',            region:'—',  stock:8,     total:110,   months:[0,0,2,2,3,0,1,0,0,0] },
+  { name:'榕发锦城大观',          region:'晋安', stock:1290,  total:171,   months:[7,0,10,13,17,8,7,11,1,2] },
+  { name:'国贸天琴华樾',          region:'晋安', stock:277,   total:256,   months:[17,31,50,4,53,103,null,null,null,null] },
+  { name:'福厝·紫阳缦宸',         region:'马尾', stock:16,    total:81,    months:[5,7,5,3,61,null,null,null,null,null] },
+  { name:'建发灏云',              region:'晋安', stock:112,   total:444,   months:[11,8,7,7,9,7,14,8,4,4] },
+  { name:'左海紫阳隐翠',          region:'仓山', stock:197,   total:15,    months:[5,6,9,10,14,null,null,-10,-9,null] },
+  { name:'保利屏西天悦',          region:'鼓楼', stock:126,   total:531,   months:[10,17,11,5,19,20,18,20,11,8] },
+  { name:'建发紫宸',              region:'—',  stock:26,    total:223,   months:[5,0,1,1,1,1,2,5,5,5] },
+  { name:'绿城芝兰月华',          region:'—',  stock:10,    total:388,   months:[3,1,0,2,9,10,1,6,8,7] },
+  { name:'华润中寰悦府',          region:'鼓楼', stock:18,    total:326,   months:[9,13,14,5,11,25,20,24,6,13] },
+  { name:'建总梧桐序',            region:'晋安', stock:372,   total:150,   months:[3,6,5,8,9,25,5,6,9,8] },
+  { name:'榕发锦樾',              region:'台江', stock:388,   total:40,    months:[5,2,3,8,5,14,null,null,null,null] },
+  { name:'福厝·凤鸣天玺',         region:'台江', stock:251,   total:37,    months:[5,5,3,3,21,null,null,null,null,null] },
+  { name:'新榕合翠',              region:'—',  stock:31,    total:7,     months:[1,1,0,2,3,null,null,null,null,null] },
+  { name:'建发国贸·望樾',         region:'—',  stock:1,     total:379,   months:[0,2,0,4,12,30,41,42,23,31] },
+  { name:'新榕云和悦',            region:'晋安', stock:748,   total:80,    months:[18,11,6,7,8,11,11,3,2,3] },
+  { name:'新投映悦湖',            region:'—',  stock:311,   total:49,    months:[0,0,0,0,0,0,4,1,1,3] },
+  { name:'建总云璟未来',          region:'晋安', stock:156,   total:494,   months:[21,23,10,21,30,35,38,41,5,20] },
+  { name:'建总江南尚璟',          region:'—',  stock:43,    total:503,   months:[0,0,2,4,2,4,1,3,0,5] },
+  { name:'左海望悦',              region:'鼓楼', stock:252,   total:672,   months:[3,5,11,7,19,32,22,41,15,22] },
+  { name:'榕发北源云筑',          region:'仓山', stock:572,   total:870,   months:[40,20,23,37,24,47,25,29,8,13] },
+  { name:'新投映南台',            region:'仓山', stock:59,    total:394,   months:[0,3,6,7,13,12,6,0,1,0] },
+  { name:'建总领筑',              region:'仓山', stock:24,    total:790,   months:[0,1,1,0,0,1,1,0,1,0] },
+  { name:'新榕江和阅',            region:'台江', stock:111,   total:142,   months:[4,5,3,7,5,14,7,5,4,7] },
+  { name:'榕发晴翠里',            region:'仓山', stock:271,   total:49,    months:[14,11,7,17,null,null,null,null,null,null] },
+  { name:'万科城市之光',          region:'仓山', stock:175,   total:2093,  months:[17,13,16,9,10,21,19,16,9,18] },
+  { name:'建总流花溪（一期）',    region:'仓山', stock:658,   total:196,   months:[10,5,4,9,12,10,7,10,2,6] },
+  { name:'建总流花溪（二期）',    region:'仓山', stock:390,   total:258,   months:[20,7,7,11,18,17,17,27,6,7] },
+  { name:'左海烟山江翠',          region:'仓山', stock:220,   total:183,   months:[6,6,3,1,3,5,4,4,2,6] },
+  { name:'榕发麓里云筑',          region:'晋安', stock:380,   total:422,   months:[10,13,11,13,22,6,17,28,0,2] },
+  { name:'左海金山文翠',          region:'仓山', stock:362,   total:138,   months:[14,20,8,11,17,13,5,4,2,0] },
+  { name:'建总瑞璟',              region:'仓山', stock:101,   total:178,   months:[16,20,6,15,18,25,17,26,3,2] },
+  { name:'建总瑞玺',              region:'仓山', stock:67,    total:99,    months:[3,7,9,4,4,11,12,13,12,8] },
+  { name:'新榕云行',              region:'仓山', stock:762,   total:10,    months:[0,0,4,1,1,3,0,0,0,0] },
+  { name:'建总雍玺湾',            region:'仓山', stock:91,    total:80,    months:[12,6,5,5,13,8,9,6,5,11] },
+  { name:'地铁栖江元璟',          region:'台江', stock:97,    total:157,   months:[12,5,6,8,33,16,29,22,30,0] },
+  { name:'左海江湾道',            region:'仓山', stock:229,   total:127,   months:[37,25,5,9,29,7,7,3,3,5] },
+  { name:'左海锦翠',              region:'仓山', stock:83,    total:23,    months:[4,5,0,1,7,6,null,null,null,null] },
+  { name:'左海滨江鸣翠',          region:'仓山', stock:274,   total:13,    months:[9,11,12,null,null,null,null,null,null,null] },
+  { name:'首开香颂花园',          region:'晋安', stock:37,    total:447,   months:[6,3,8,14,9,10,7,2,0,1] },
+  { name:'首开香悦',              region:'晋安', stock:2,     total:222,   months:[1,14,0,0,0,0,1,0,0,0] },
+  { name:'大东海玺悦',            region:'仓山', stock:16,    total:201,   months:[4,1,5,1,1,4,5,0,0,2] },
+  { name:'榕发揽湖',              region:'—',  stock:38,    total:602,   months:[1,0,0,4,2,8,3,3,2,3] },
+  { name:'榕发誉湖',              region:'—',  stock:26,    total:350,   months:[0,1,0,0,2,3,2,2,1,3] },
+  { name:'左海星悦颂',            region:'晋安', stock:12,    total:372,   months:[1,2,3,7,11,13,11,10,10,17] },
+  { name:'福厝远山拾里',          region:'晋安', stock:479,   total:445,   months:[15,10,23,14,29,39,42,3,2,13] },
+  { name:'新投映万合',            region:'台江', stock:120,   total:224,   months:[12,11,14,17,23,19,25,6,3,8] },
+  { name:'榕发城启未来',          region:'晋安', stock:1100,  total:402,   months:[21,26,20,33,40,48,41,38,9,10] },
+  { name:'榕发湖樾',              region:'晋安', stock:168,   total:172,   months:[16,15,11,8,24,27,25,19,4,12] },
+  { name:'福厝·澜湖悦宸',         region:'台江', stock:137,   total:87,    months:[16,5,10,51,5,null,null,null,null,null] },
+  { name:'新榕亦川',              region:'晋安', stock:193,   total:2,     months:[0,0,0,0,0,3,0,1,null,null] },
+  { name:'新榕和砚',              region:'晋安', stock:53,    total:39,    months:[3,3,2,6,10,19,null,null,null,null] },
+  { name:'地铁元启',              region:'鼓楼', stock:32,    total:24,    months:[1,3,23,null,null,null,-3,null,null,null] },
+  { name:'新榕安岚',              region:'台江', stock:541,   total:31,    months:[31,null,null,null,null,null,null,null,null,null] },
+  { name:'榕发麓岛',              region:'仓山', stock:117,   total:43,    months:[43,null,null,null,null,null,null,null,null,null] },
+  { name:'建总瑞玺二期',          region:'仓山', stock:174,   total:46,    months:[46,null,null,null,null,null,null,null,null,null] },
 ];
 
 // ===== 数据驱动渲染（主表 + 频次榜，由 JS 数组生成，更新只改数据不改结构）=====
@@ -1904,21 +1912,21 @@ function renderHeader(){
 function renderVelocity(){
   if(!document.getElementById('vel-body')) return;
   const rows = VELOCITY_DATA.map(d=>{
-    // ⚠️ 源数据 months 与截图列序一致，为「8月 → 1月」倒序；
-    // 此处统一反转为规范序 m[0]=1月 … m[7]=8月，后续 m1..m8 映射与 avg3 才正确
+    // ⚠️ 源数据 months 与监测表列序一致，为「10月 → 1月」倒序；
+    // 此处统一反转为规范序 m[0]=1月 … m[9]=10月，后续 m1..m10 映射与 avg3 才正确
     const m = d.months.slice().reverse();
     const nz = m.filter(v=>v!==null && v!==undefined);
-    const sum8 = nz.reduce((a,b)=>a+b,0);
-    const last3 = m.slice(5,8).filter(v=>v!==null && v!==undefined);
+    const sum10 = nz.reduce((a,b)=>a+b,0);
+    const last3 = m.slice(7,10).filter(v=>v!==null && v!==undefined);  // 8/9/10月
     const avg3 = last3.length===3 ? +((last3[0]+last3[1]+last3[2])/3).toFixed(1) : (last3.length ? +(last3.reduce((a,b)=>a+b,0)/last3.length).toFixed(1) : null);
     const cycle = (avg3 && avg3>0) ? +(d.stock/avg3).toFixed(1) : null;
-    return Object.assign({}, d, { m1:m[0],m2:m[1],m3:m[2],m4:m[3],m5:m[4],m6:m[5],m7:m[6],m8:m[7], sum8, avg3, cycle, active: d.stock >= 30 });
+    return Object.assign({}, d, { m1:m[0],m2:m[1],m3:m[2],m4:m[3],m5:m[4],m6:m[5],m7:m[6],m8:m[7],m9:m[8],m10:m[9], sum10, avg3, cycle, active: d.stock >= 30 });
   });
   const activeRows = rows.filter(r=>r.active);
   const activeN = activeRows.length;
   // 库存合计 / 累计网签 → 全量（市场事实快照）；其余判断性聚合 → 活跃盘
   const totInv = rows.reduce((a,r)=>a+r.stock,0);
-  const totCum = rows.reduce((a,r)=>a+r.sum8,0); // 2026年累计 = 1–8月网签合计（原误取 total 历年累计字段）
+  const totCum = rows.reduce((a,r)=>a+r.sum10,0); // 2026年累计 = 1–10月网签合计（total 为历年累计，不用于此卡片）
   const totAvg3 = activeRows.reduce((a,r)=>a+(r.avg3||0),0);
   const cycles = activeRows.map(r=>r.cycle).filter(c=>c!==null && isFinite(c)).sort((a,b)=>a-b);
   const medCyc = cycles.length ? cycles[Math.floor(cycles.length/2)].toFixed(1) : '—';
@@ -1978,7 +1986,7 @@ function renderVelocity(){
 
     const body = document.getElementById('vel-body');
     if(list.length===0){
-      body.innerHTML = '<tr><td colspan="16" style="padding:28px 12px;text-align:center;color:#aaa;font-size:13px;background:#fafbfc;">🔍 在「'+(curR==='全部'?'全部区域':regionLabel(curR))+'」中未匹配到包含「<strong style="color:#e65100;">'+curQ+'</strong>」的项目</td></tr>';
+      body.innerHTML = '<tr><td colspan="17" style="padding:28px 12px;text-align:center;color:#aaa;font-size:13px;background:#fafbfc;">🔍 在「'+(curR==='全部'?'全部区域':regionLabel(curR))+'」中未匹配到包含「<strong style="color:#e65100;">'+curQ+'</strong>」的项目</td></tr>';
       if(qCountEl){ qCountEl.innerHTML = '<strong>0</strong> 个匹配'; }
       return;
     }
@@ -1991,6 +1999,7 @@ function renderVelocity(){
     const sumInv = list.reduce((a,r)=>a+r.stock,0);
     const sumCum = list.reduce((a,r)=>a+r.total,0);
     const sumAvg = activeList.reduce((a,r)=>a+(r.avg3||0),0);
+    const sumM10=activeList.reduce((a,r)=>a+(r.m10||0),0),sumM9=activeList.reduce((a,r)=>a+(r.m9||0),0);
     const sumM8=activeList.reduce((a,r)=>a+(r.m8||0),0),sumM7=activeList.reduce((a,r)=>a+(r.m7||0),0);
     const sumM6=activeList.reduce((a,r)=>a+(r.m6||0),0),sumM5=activeList.reduce((a,r)=>a+(r.m5||0),0);
     const sumM4=activeList.reduce((a,r)=>a+(r.m4||0),0),sumM3=activeList.reduce((a,r)=>a+(r.m3||0),0);
@@ -2002,6 +2011,7 @@ function renderVelocity(){
       '<td><span class="vel-tag '+regionClass(r.region)+'">'+regionLabel(r.region)+'</span></td>'+
       '<td class="inv">'+fmt(r.stock)+'</td>'+
       '<td class="cum">'+fmt(r.total)+'</td>'+
+      numCell(r.m10)+numCell(r.m9)+
       numCell(r.m8)+numCell(r.m7)+numCell(r.m6)+numCell(r.m5)+
       numCell(r.m4)+numCell(r.m3)+numCell(r.m2)+numCell(r.m1)+
       '<td class="avg3">'+(r.avg3===null?'—':r.avg3)+'</td>'+
@@ -2012,6 +2022,7 @@ function renderVelocity(){
     '<td>—</td>'+
     '<td>'+fmt(sumInv)+'</td>'+
     '<td>'+fmt(sumCum)+'</td>'+
+    '<td>'+sumM10+'</td><td>'+sumM9+'</td>'+
     '<td>'+sumM8+'</td><td>'+sumM7+'</td><td>'+sumM6+'</td><td>'+sumM5+'</td>'+
     '<td>'+sumM4+'</td><td>'+sumM3+'</td><td>'+sumM2+'</td><td>'+sumM1+'</td>'+
     '<td class="avg3">'+sumAvg.toFixed(1)+'</td>'+
